@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "861467468652",
+    "project_id": "fyp-ewallet",
+    "storage_bucket": "fyp-ewallet.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:861467468652:android:584e6652eb514843cb4949",
+        "android_client_info": {
+          "package_name": "com.fluttertutorial.one_e_sample"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "861467468652-ucmm3mj4j77udhdkheafo7kmllks5bp4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAa0JJeNbgewcmRJHnikiVKPs8mJs4oYAU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "861467468652-ucmm3mj4j77udhdkheafo7kmllks5bp4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:861467468652:android:eac5ca0f9f1a3b47cb4949",
+        "android_client_info": {
+          "package_name": "com.fyp.ewallet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "861467468652-ucmm3mj4j77udhdkheafo7kmllks5bp4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAa0JJeNbgewcmRJHnikiVKPs8mJs4oYAU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "861467468652-ucmm3mj4j77udhdkheafo7kmllks5bp4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
