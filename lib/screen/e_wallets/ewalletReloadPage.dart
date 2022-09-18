@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:one_e_sample/firebase/database.dart';
 import 'package:one_e_sample/models/ewallets_cardModel.dart';
 import 'package:one_e_sample/models/userModel.dart';
@@ -15,7 +15,7 @@ class IndvEwalletReloadPage extends StatefulWidget {
   _IndvEwalletReloadPageState createState() => _IndvEwalletReloadPageState();
     final EwalletsCardModel ewalletDetail;
 
-    IndvEwalletReloadPage({@required this.ewalletDetail});
+    IndvEwalletReloadPage({required this.ewalletDetail});
 }
 
 class _IndvEwalletReloadPageState extends State<IndvEwalletReloadPage> {
@@ -27,14 +27,14 @@ class _IndvEwalletReloadPageState extends State<IndvEwalletReloadPage> {
   var txtController = TextEditingController();
   String _reloadAmount = "";
   String _reloadErrorMsg = "";
-  UserModel userDetail;
+  late UserModel userDetail;
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => removeFocus(),
       child: Scaffold(
         backgroundColor: ColourTheme.lightBackground,
-        appBar: backButtonAppBar(context: context, title: 'Reload ${widget.ewalletDetail.eWalletType} E-wallet'),
+        appBar: BackButtonAppBar(context: context, title: 'Reload ${widget.ewalletDetail.eWalletType} E-wallet'),
         body: Container(
           height: MediaQuery.of(context).size.height,
           child: SingleChildScrollView(
@@ -61,24 +61,25 @@ class _IndvEwalletReloadPageState extends State<IndvEwalletReloadPage> {
                   margin: EdgeInsets.symmetric(vertical: 50),
                   alignment: Alignment.center,
                   child: CustomBtnSlideButton(
+                    width: 250,
                     isFullWidth: true,
                     text: 'Slide to Confirm Payment',
                     onSlide: () async{
                       removeFocus();
-                      if ( reloadAmountValidation( userDetail.userUeAccBalance, double.parse( _reloadAmount.isEmpty ? 0.toStringAsFixed(0) : _reloadAmount ) ) ) {
+                      if ( reloadAmountValidation( userDetail.userUeAccBalance!, double.parse( _reloadAmount.isEmpty ? 0.toStringAsFixed(0) : _reloadAmount ) ) ) {
                         bool updateStatus = await DatabaseService().performReloadEwalletTrx(reloadedAmount: double.parse(_reloadAmount), ewalletDetail: widget.ewalletDetail);
                         if (updateStatus) {
                           popUpCustomSuccess(
                             context: context, 
                             title: '\nSuccessfully Reloaded ${widget.ewalletDetail.eWalletType} \nE-wallet',
-                            dismissAction: () => Navigator.pop(context),
+                            dismissAction: (type) => Navigator.pop(context),
                           );
                         }
                         else {
                           popUpFailed(
                             context: context, 
                             title: '\nReload Transaction Failed, Please Try Again',
-                            dismissAction: () => setState( () { txtController.value = TextEditingValue.empty; } ),
+                            dismissAction: (type) => setState( () { txtController.value = TextEditingValue.empty; } ),
                           );
                         }
                       }
@@ -116,9 +117,9 @@ class _IndvEwalletReloadPageState extends State<IndvEwalletReloadPage> {
               if (!snapshot.hasData) {
                 return CircularProgressIndicator();
               } else {
-                userDetail = snapshot.data;
+                userDetail = snapshot.data as UserModel;
                 return Text(
-                  'RM${userDetail.userUeAccBalance.toStringAsFixed(2)}',
+                  'RM${userDetail.userUeAccBalance?.toStringAsFixed(2)}',
                   style: TextFontStyle.customFontStyle(TextFontStyle.ewalletReloadPage_title),
                 );
               }
@@ -130,7 +131,7 @@ class _IndvEwalletReloadPageState extends State<IndvEwalletReloadPage> {
           ),
           SizedBox(height: GeneralPositioning.ewalletReloadPage_spaceBetween_title),
           Text(
-            'RM${widget.ewalletDetail.eWalletBalance.toStringAsFixed(2)}',
+            'RM${widget.ewalletDetail.eWalletBalance?.toStringAsFixed(2)}',
             style: TextFontStyle.customFontStyle(TextFontStyle.ewalletReloadPage_title),
           ),
           Text(
@@ -190,7 +191,7 @@ class _IndvEwalletReloadPageState extends State<IndvEwalletReloadPage> {
     );
   }
 
-  Widget reloadOptionButton({@required String reloadAmountInput}) {
+  Widget reloadOptionButton({required String reloadAmountInput}) {
     return ElevatedButton(
       style: ButtonStyle(
         padding: MaterialStateProperty.all(

@@ -4,7 +4,7 @@ import 'package:one_e_sample/shared_objects/const_values.dart';
 import 'package:provider/provider.dart';
 
 class HomeEwalletCard extends StatefulWidget {
-  const HomeEwalletCard({ Key key, }) : super(key: key);
+  const HomeEwalletCard({ Key ?key, }) : super(key: key);
 
   @override
   _HomeEwalletCardState createState() => _HomeEwalletCardState();
@@ -65,7 +65,7 @@ class _HomeEwalletCardState extends State<HomeEwalletCard> {
                   ),
                   Spacer(),
                   Text(
-                    'RM${ewalletList[index].eWalletBalance.toStringAsFixed(2) ?? "Fallback Balance"}',
+                    'RM${ewalletList[index].eWalletBalance?.toStringAsFixed(2) ?? "Fallback Balance"}',
                     style: TextFontStyle.customFontStyle(TextFontStyle.homePage_ewalletCard_balance),
                   ),
                   Text(

@@ -14,7 +14,7 @@ import 'package:one_e_sample/shared_objects/const_values.dart';
 //   )
 // );
 
-InputDecoration reloadPaymentInputDecoration({String hintText, FaIcon surfixIcon}) {
+InputDecoration reloadPaymentInputDecoration({String ?hintText, FaIcon ?surfixIcon}) {
   return InputDecoration(
     hintText: '$hintText',
     hintStyle: TextFontStyle.customFontStyle(20, color: Colors.grey),
@@ -47,7 +47,7 @@ InputDecoration reloadPaymentInputDecoration({String hintText, FaIcon surfixIcon
 }
 
 
-InputDecoration dropDownInputDecoration({String hintText}) {
+InputDecoration dropDownInputDecoration({String ?hintText}) {
   return InputDecoration(
     hintText: hintText,
     hintStyle: TextFontStyle.customFontStyle(TextFormValues.textFormDropDownFont, color: ColourTheme.fontLightGrey),
@@ -103,7 +103,7 @@ InputDecoration textPaymentInputDecoration () {
   );
 }
 
-InputDecoration textInputDecoration({@required hintText, IconData formIcon}) {
+InputDecoration textInputDecoration({required hintText, IconData ?formIcon}) {
   return InputDecoration(
     prefixIcon: formIcon!=null ? Icon(formIcon): null ,
     hintText: '$hintText',
@@ -148,14 +148,14 @@ InputDecoration textInputDecoration({@required hintText, IconData formIcon}) {
 
 class PaymentTextFormField extends StatefulWidget {
 
-  final Function(String value) onChanged;
-  final Function(String value) validation;
-  final TextEditingController controller;
+  final Function(String ?value) ?onChanged;
+  final Function(String ?value) ?validation;
+  final TextEditingController ?controller;
   final bool isDecimal;
   ///Controls the width of the textformfield, defaults to 160
-  final double width;
+  final double ?width;
 
-  PaymentTextFormField({this.onChanged, this.controller, this.width, this.isDecimal = false, this.validation});
+  PaymentTextFormField({this.onChanged, this.controller, this.width, this.isDecimal = false, required this.validation});
 
   @override
   _PaymentTextFormFieldState createState() => _PaymentTextFormFieldState();
@@ -177,7 +177,7 @@ class _PaymentTextFormFieldState extends State<PaymentTextFormField> {
         keyboardType: TextInputType.numberWithOptions(decimal: true, signed: false),
         style: TextFontStyle.customFontStyle(TextFontStyle.ewalletReloadPage_ewalletReloadAmount, color: ColourTheme.fontBlue),
         decoration: textPaymentInputDecoration(),
-        validator: widget.validation,
+        validator: widget.validation as String? Function(String?)?,
         onChanged: widget.onChanged,
       ),
     );
@@ -187,17 +187,17 @@ class _PaymentTextFormFieldState extends State<PaymentTextFormField> {
 class CustomTextField extends StatefulWidget {
   // String hintText, bool obscureText, Function validation, IconData formIcon, String inputValue, Function onChanged}) { //Input Text Field For login/Register Fields
   ///Indicates the default text to be displayed when the field is empty
-  final String hintText;
+  final String ?hintText;
   /// Hides the input text. [true] to hide it, [false] to unhide it.
-  final bool obscureText;
+  final bool ?obscureText;
   /// Provides validation checking for the text field
-  final Function(String) validation;
+  final Function(String) ?validation;
   /// Controls the event of changing the text
-  final Function(String) onChanged;
+  final Function(String) ?onChanged;
   /// Displays an icon at the start of the text field
-  final IconData formIcon;
+  final IconData ?formIcon;
   /// Provides a text controller in managing the input text.
-  final TextEditingController textController;
+  final TextEditingController ?textController;
 
   const CustomTextField({this.hintText, this.obscureText, this.validation, this.onChanged, this.formIcon, this.textController});
 
@@ -218,7 +218,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
       obscureText: widget.obscureText ?? false,
       decoration: textInputDecoration(hintText: widget.hintText, formIcon: widget.formIcon),
       onChanged: widget.onChanged,
-      validator: widget.validation,  //validation
+      validator: widget.validation as String? Function(String?)?,  //validation
     );
   }
 }
@@ -228,9 +228,9 @@ class DropDownFormField extends StatefulWidget {
   final Function validate;
   final Function(String value) onChanged;
   final List<String> itemLst; 
-  final String hintText;
+  final String ?hintText;
 
-  DropDownFormField({this.validate, this.onChanged, @required this.itemLst, this.hintText}); 
+  DropDownFormField({required this.validate, required this.onChanged, required this.itemLst, this.hintText}); 
 
 
   @override
@@ -252,8 +252,8 @@ class _DropDownFormFieldState extends State<DropDownFormField> {
             )
           );
         }).toList(),
-        validator: widget.validate,
-        onChanged: widget.onChanged ?? (value) {},
+        validator: widget.validate as  String? Function(String?)?,
+        onChanged: widget.onChanged as Function(String?)? ?? (value) {},
         ),
     );
   }
@@ -261,10 +261,10 @@ class _DropDownFormFieldState extends State<DropDownFormField> {
 
 class AdditionalErrorMsg extends StatelessWidget {
 
-  final String errorMsg;
-  final bool visbibleCondition;
+  final String ?errorMsg;
+  final bool ?visbibleCondition;
 
-  AdditionalErrorMsg({ @required this.visbibleCondition, this.errorMsg });
+  AdditionalErrorMsg({ required this.visbibleCondition, this.errorMsg });
 
   @override
   Widget build(BuildContext context) {

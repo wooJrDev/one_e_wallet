@@ -1,5 +1,4 @@
-import 'package:custom_radio_grouped_button/CustomButtons/ButtonTextStyle.dart';
-import 'package:custom_radio_grouped_button/CustomButtons/CustomRadioButton.dart';
+import 'package:custom_radio_grouped_button/custom_radio_grouped_button.dart';
 import 'package:flutter/material.dart';
 import 'package:one_e_sample/shared_objects/const_values.dart';
 import 'package:slide_to_confirm/slide_to_confirm.dart';
@@ -7,17 +6,19 @@ import 'package:slide_to_confirm/slide_to_confirm.dart';
 class PillShapedButton extends StatelessWidget {
   final String buttonText;
   final Color bgColor;
-  final VoidCallback callback; //Function class can also be used instead
+  final VoidCallback ?callback; //Function class can also be used instead
 
   PillShapedButton(this.buttonText, this.bgColor, {this.callback});
 
   @override
   Widget build(BuildContext context) {
-    return RaisedButton(
-    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-    color: bgColor,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(50)
+    return ElevatedButton(
+    style: ElevatedButton.styleFrom(
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      backgroundColor: bgColor,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(50)
+      ),
     ),
     child: Text(
       '$buttonText',
@@ -32,14 +33,14 @@ class PillShapedButton extends StatelessWidget {
 
 class CustomBtnSquareButton extends StatefulWidget {
 
-  final VoidCallback onPressed;
-  final String text;
+  final VoidCallback ?onPressed;
+  final String ?text;
   ///Provides a flexible width unless specified
-  final double customWidth;
-  final EdgeInsetsGeometry padding;
-  final Color bgColour;
+  final double ?customWidth;
+  final EdgeInsetsGeometry ?padding;
+  final Color ?bgColour;
   ///Specifies a custom child, by [default] a text widget would be the child
-  final Widget child;
+  final Widget ?child;
 
   CustomBtnSquareButton({this.text, this.onPressed, this.customWidth, this.padding, this.bgColour, this.child});
 
@@ -76,15 +77,15 @@ class _CustomBtnSquareButtonState extends State<CustomBtnSquareButton> {
 
 class CustomBtnSlideButton extends StatefulWidget {
 
-  final String text;
+  final String ?text;
   ///Specifies a custom width;
   final double width;
   ///If [true] the width would be set to the maximum value (332), [false] would be set to the default value (250).
   ///Will be overriden if a custom width is specified.
   final bool isFullWidth;
-  final VoidCallback onSlide;
+  final VoidCallback ?onSlide;
 
-  CustomBtnSlideButton({this.text, this.width, this.isFullWidth = false, this.onSlide});
+  CustomBtnSlideButton({this.text, required this.width, this.isFullWidth = false, this.onSlide});
 
   @override
   _CustomBtnSlideButtonState createState() => _CustomBtnSlideButtonState();
@@ -113,7 +114,7 @@ class CustomBtnRadioButton extends StatefulWidget {
   final void Function(dynamic) onTap;
   final String buttonValue;
 
-  const CustomBtnRadioButton({Key key, @required this.buttonLablesLst, @required this.buttonValuesLst, @required this.buttonValue, @required this.onTap}) : super(key: key);
+  const CustomBtnRadioButton({Key ?key, required this.buttonLablesLst, required this.buttonValuesLst, required this.buttonValue, required this.onTap}) : super(key: key);
 
 
   @override
@@ -147,7 +148,7 @@ class _CustomBtnRadioButtonState extends State<CustomBtnRadioButton> {
 }
 
 class LoadingIndicator extends StatelessWidget {
-  const LoadingIndicator({ Key key }) : super(key: key);
+  const LoadingIndicator({ Key ?key }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

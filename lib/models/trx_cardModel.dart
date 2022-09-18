@@ -6,12 +6,12 @@ import 'package:one_e_sample/models/chartModel.dart';
 import 'package:one_e_sample/shared_objects/const_values.dart';
 
 class TrxCardModel {
-  String trxType;
-  String trxMethod;
-  String trxRecipient; //May be null if it's a reload transaction
-  double trxAmount;
-  String trxDateTime;
-  String trxId;
+  String ?trxType;
+  String ?trxMethod;
+  String ?trxRecipient; //May be null if it's a reload transaction
+  double ?trxAmount;
+  String ?trxDateTime;
+  String ?trxId;
 
   var cardIcon;
   var cardTraillingColour;
@@ -25,7 +25,7 @@ class TrxCardModel {
     this.trxId,
   });
 
-  getTrxCardStyle(TrxCardModel trxCard, {String dataType}) {
+  getTrxCardStyle(TrxCardModel trxCard, {String ?dataType}) {
     if (trxCard.trxType == 'Reload') {
       if (dataType == 'Icon')
         return FontAwesomeIcons.moneyBillWaveAlt;
@@ -47,16 +47,16 @@ class TrxCardModel {
     }
   }
 
-  DateTime getDateTimeFormat({@required String dateTime}) {
+  DateTime getDateTimeFormat({required String dateTime}) {
     return DateTime.parse( DateFormat("dd/MM/y hh:mm a").parse( dateTime ).toString() );
   }
 
-  String getTrxDate({@required String dateTime}) {
+  String getTrxDate({required String dateTime}) {
     return DateFormat("dd/MM/y").format( DateFormat("dd/MM/y hh:mm a").parse( dateTime ) );
     //DateFormat('hh:mm a').format(DateFormat("HH:mm").parse(trxCard.trxDateTime))
   }
 
-  String getTrxTime({@required String dateTime}) {
+  String getTrxTime({required String dateTime}) {
     return DateFormat('hh:mm a').format( DateFormat( "dd/MM/y hh:mm a" ).parse( dateTime ) );
   }
 
@@ -73,7 +73,7 @@ class TrxCardModel {
 
   double getTotalTrx(List<TrxCardModel> trxLst ) {
     trxLst = trxLst.where((indvTrx) => indvTrx.trxType == "Payment").toList();
-    double totalTrxAmount = trxLst.fold(0, (total, item) => total.toDouble() + item.trxAmount );
+    double totalTrxAmount = trxLst.fold(0, (total, item) => total.toDouble() + item.trxAmount! );
     return totalTrxAmount;
   }
 
@@ -89,7 +89,7 @@ class TrxCardModel {
       // var dateTimeTrx = date.stringToOriDateTime(inputDate: trxLst);
       double sumOfTheHour = trxLst
         .where((item) => date.currentTimeOfDay(inputTime: date.stringToOriDateTime(inputDate: item.trxDateTime) )  == index)
-        .fold(0, (previousValue, item) => previousValue.toDouble() + item.trxAmount);
+        .fold(0, (previousValue, item) => previousValue.toDouble() + item.trxAmount!);
 
       dailyTrxLst.add( DailyChart(timeOfDay: index, trxAmount: sumOfTheHour) );
     }
@@ -105,7 +105,7 @@ class TrxCardModel {
     for (var index = 0; index <= 6; index++) {
       double sumOfTheDay = trxLst
         .where((item) => Date().stringToDateTime(inputDate: item.trxDateTime).weekday - 1 == index)
-        .fold(0, (previousValue, item) => previousValue.toDouble() + item.trxAmount);
+        .fold(0, (previousValue, item) => previousValue.toDouble() + item.trxAmount!);
 
       wkTrxLst.add( WeeklyChart(day: index, trxAmount: sumOfTheDay) );
     }
@@ -145,11 +145,11 @@ class TrxCardModel {
       if (index == 3) { //*If its week 4 and beyond, combine all remaining trx under a single week
         sumOfTheWeek = trxLst
         .where((item) => Date().currentWeekNumber(inputDate: Date().stringToDateTime(inputDate: item.trxDateTime) ) >= 4)
-        .fold(0, (previousValue, item) => previousValue.toDouble() + item.trxAmount);
+        .fold(0, (previousValue, item) => previousValue.toDouble() + item.trxAmount!);
       } else {
         sumOfTheWeek = trxLst
         .where((item) => Date().currentWeekNumber(inputDate: Date().stringToDateTime(inputDate: item.trxDateTime) ) - 1 == index)
-        .fold(0, (previousValue, item) => previousValue.toDouble() + item.trxAmount);
+        .fold(0, (previousValue, item) => previousValue.toDouble() + item.trxAmount!);
       }
 
       mthTrxLst.add( MonthlyChart(week: index, trxAmount: sumOfTheWeek) );

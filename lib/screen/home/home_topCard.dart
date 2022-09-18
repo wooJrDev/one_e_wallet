@@ -32,7 +32,7 @@ class _HomeTopCardState extends State<HomeTopCard> {
             ),
           );
         }else {
-          UserModel userDetail = snapshot.data;
+          UserModel userDetail = snapshot.data as UserModel;
           return Container(
             height: 200,
             width: MediaQuery.of(context).size.width,
@@ -57,7 +57,7 @@ class _HomeTopCardState extends State<HomeTopCard> {
                 Positioned(
                   top: 55,
                   child: Text(
-                    'RM${userDetail.userUeAccBalance.toStringAsFixed(2)}',
+                    'RM${userDetail.userUeAccBalance?.toStringAsFixed(2)}',
                     style: TextStyle(
                       fontSize: 40,
                       color: ColourTheme.fontWhite,

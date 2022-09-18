@@ -15,8 +15,8 @@ import 'package:one_e_sample/shared_objects/shared_textFormField.dart';
 
 class PaymentAmountPage extends StatefulWidget {
 
-  final EwalletsCardModel ewalletDetail;
-  final String merchantName;
+  final EwalletsCardModel ?ewalletDetail;
+  final String ?merchantName;
 
   PaymentAmountPage({this.ewalletDetail, this.merchantName});
 
@@ -37,7 +37,7 @@ class _PaymentAmountPageState extends State<PaymentAmountPage> {
       onTap: () => removeFocus(),
       child: Scaffold(
         backgroundColor: ColourTheme.lightBackground,
-        appBar: backButtonAppBar(context: context, title: 'Enter Payment Amount'),
+        appBar: BackButtonAppBar(context: context, title: 'Enter Payment Amount'),
         body: SingleChildScrollView(
           child: Container(
               width: double.infinity,
@@ -83,14 +83,14 @@ class _PaymentAmountPageState extends State<PaymentAmountPage> {
                           stream: DatabaseService().getUserDetail,
                           builder: (context, snapshot) {
                             if (snapshot.hasData) {
-                                UserModel uewalletDetail = snapshot.data;
-                                return TrxListTile(trxTitle: "UE-wallet", trxLabel: 'RM${uewalletDetail.userUeAccBalance.toStringAsFixed(2)}' ?? "Uewallet Balance",);
+                                UserModel uewalletDetail = snapshot.data as UserModel;
+                                return TrxListTile(trxTitle: "UE-wallet", trxLabel: 'RM${uewalletDetail.userUeAccBalance?.toStringAsFixed(2)}' ?? "Uewallet Balance",);
                             } else {
                               return CircularProgressIndicator();
                             }
                           },
                         ),
-                        TrxListTile(trxTitle: "${widget.ewalletDetail.eWalletType} Balance", trxLabel: 'RM${widget.ewalletDetail.eWalletBalance.toStringAsFixed(2)}' ?? "Fallback E-wallet Type",),
+                        TrxListTile(trxTitle: "${widget.ewalletDetail?.eWalletType} Balance", trxLabel: 'RM${widget.ewalletDetail?.eWalletBalance?.toStringAsFixed(2)}' ?? "Fallback E-wallet Type",),
                       ],
                     ),
                   ),
@@ -112,18 +112,19 @@ class _PaymentAmountPageState extends State<PaymentAmountPage> {
                             style: TextFontStyle.customFontStyle(TextFontStyle.trxPopUpDialog_trxTitle)
                           ),
                         ),
-                        TrxListTile(trxTitle: "E-wallet used", trxLabel: widget.ewalletDetail.eWalletType ?? "Fallback E-wallet Type",),
+                        TrxListTile(trxTitle: "E-wallet used", trxLabel: widget.ewalletDetail?.eWalletType ?? "Fallback E-wallet Type",),
                         TrxListTile(trxTitle: "Paying To", trxLabel:  widget.merchantName ?? "Fallback Merchant",),
                       ],
                     ),
                   ),
                   SizedBox(height: 20),
                   CustomBtnSlideButton(
+                    width: 322,
                     text: 'Slide to Confirm Payment',
                     isFullWidth: true,
                     onSlide: () async {
                       removeFocus();
-                      if (_formKey.currentState.validate()) {
+                      if (_formKey.currentState!.validate()) {
 
                         double finalPaymentAmount = double.parse(_paymentAmountController.text);
                         TrxCardModel trxDetail = await DatabaseService().performPayment(
@@ -137,7 +138,7 @@ class _PaymentAmountPageState extends State<PaymentAmountPage> {
                             context: context, 
                             title: 'Successfully Paid RM${double.parse(_paymentAmountController.text).toStringAsFixed(2)} To ${widget.merchantName}', 
                             // btnCancelOnPress: () => Navigator.of(context).popUntil((route) => route.isFirst),
-                            dismissAction: () {
+                            dismissAction: (type) {
                               print('Triggered Dismiss');
                               waitResult ? null : Navigator.of(context).popUntil((route) => route.isFirst);
                             },
@@ -169,7 +170,7 @@ class _PaymentAmountPageState extends State<PaymentAmountPage> {
                           popUpFailed(
                             context: context, 
                             title: "Failed to perform transaction, please try again", 
-                            dismissAction: () { 
+                            dismissAction: (type) { 
                               setState(() {
                                 _paymentAmountController.value = TextEditingValue.empty;
                               }); 
@@ -196,22 +197,22 @@ class _PaymentAmountPageState extends State<PaymentAmountPage> {
     return TrxCardModel(
       trxId: 'TestID001',
       trxType: 'Payment',
-      trxMethod: widget.ewalletDetail.eWalletType,
+      trxMethod: widget.ewalletDetail?.eWalletType,
       trxRecipient: widget.merchantName,
       trxAmount: double.parse(_paymentAmountController.text),
       trxDateTime: DateFormat( "dd/MM/y hh:mm a" ).format( DateTime.now().add( Duration( hours: 8 ) ) ).toString(),
     );
   }
 
-  String _paymentAmountValidation(String value) {
-    var paymentAmount = value.isNotEmpty ? double.parse(value) : 0;
+  String _paymentAmountValidation(String ?value) {
+    var paymentAmount = value!.isNotEmpty ? double.parse(value) : 0;
     if (paymentAmount == 0 )
       return 'Payment amount cannot be empty';
     else if (paymentAmount > 9999)
       return 'Payment amount cannot exceed RM9999';
-    else if (paymentAmount > widget.ewalletDetail.eWalletBalance)
+    else if (paymentAmount > widget.ewalletDetail!.eWalletBalance!)
       return 'Payment amount cannot exceed current E-wallet balance';
-    return null;
+    return null!;
   }
 
 }

@@ -9,7 +9,7 @@ import 'package:one_e_sample/shared_objects/shared_textFormField.dart';
 
 class RegisterPage extends StatefulWidget {
 
-  final Function changeScreen;
+  final Function ?changeScreen;
   RegisterPage({this.changeScreen});
 
   @override
@@ -18,9 +18,9 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage> {
 
-  String usernameInput;
-  String passwordInput;
-  String emailInput;
+  String ?usernameInput;
+  String ?passwordInput;
+  String ?emailInput;
   bool signUpError = false;
   bool loadingState = false;
 
@@ -48,8 +48,8 @@ class _RegisterPageState extends State<RegisterPage> {
         decoration: BoxDecoration(
           gradient: new LinearGradient(
             colors: [
-              Colors.orange[100],
-              Colors.deepOrange[700],
+              Colors.orange[100]!,
+              Colors.deepOrange[700]!,
             ],
             begin: const FractionalOffset(0.0, 0.0),
             end: const FractionalOffset(2.0, 2.0),
@@ -93,11 +93,11 @@ class _RegisterPageState extends State<RegisterPage> {
             TitleText(title: 'Register an account', fontSize: TextFontStyle.registerPage_titleFontSize,),
             SizedBox(height: 30),
 
-            ..._inputText(inputName: 'Username', validation: usernameValidation, formIcon: Icons.person, inputValue: usernameInput, onChanged: usernameOnChanged),
+            ..._inputText(inputName: 'Username', validation: usernameValidation, formIcon: Icons.person, inputValue: usernameInput!, onChanged: usernameOnChanged),
             SizedBox(height: TextFormValues.spaceBetweenTextForm),
-            ..._inputText(inputName: 'Email', validation: emailValidation, formIcon: Icons.email, inputValue: emailInput, onChanged: emailOnChanged),
+            ..._inputText(inputName: 'Email', validation: emailValidation, formIcon: Icons.email, inputValue: emailInput!, onChanged: emailOnChanged),
             SizedBox(height: TextFormValues.spaceBetweenTextForm),
-            ..._inputText(inputName: 'Password', obscureText: true, validation: passwordValidation, formIcon: Icons.lock, inputValue: passwordInput, onChanged: passwordOnChanged),
+            ..._inputText(inputName: 'Password', obscureText: true, validation: passwordValidation, formIcon: Icons.lock, inputValue: passwordInput!, onChanged: passwordOnChanged),
             SizedBox(height: TextFormValues.spaceBetweenTextForm),
             AdditionalErrorMsg(visbibleCondition: signUpError, errorMsg: 'This email has been taken',),
             _registerButton(),
@@ -111,7 +111,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     text: 'Login',
                     style: TextStyle(color: Colors.red[800], fontWeight: FontWeight.w900),
                     recognizer: TapGestureRecognizer()..onTap = (){
-                      widget.changeScreen();
+                      widget.changeScreen!();
                     },
                   ),
                   TextSpan(
@@ -126,15 +126,15 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 
-  List<Widget> _inputText({String inputName, bool obscureText, Function validation, IconData formIcon, String inputValue, Function onChanged}) {
+  List<Widget> _inputText({String ?inputName, bool ?obscureText, Function ?validation, IconData ?formIcon, String ?inputValue, Function ?onChanged}) {
     return [
       SizedBox(height: TextFormValues.spaceBetweenFormTitle),
       CustomTextField(
         hintText: inputName,
         formIcon: formIcon,
         obscureText: obscureText,
-        validation: validation,
-        onChanged: onChanged,
+        validation: validation as dynamic Function(String)?,
+        onChanged: onChanged as dynamic Function(String)?,
       ),
     ];
   }
@@ -152,13 +152,13 @@ class _RegisterPageState extends State<RegisterPage> {
       padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
       onPressed: () async{
         removeFocus();
-        if (_formKey.currentState.validate()) {
+        if (_formKey.currentState!.validate()) {
           setState(() {
               signUpError = false;
               loadingState = true;
           });
 
-          dynamic result = await _authService.authRegister(email: emailInput, password: passwordInput, username: usernameInput);
+          dynamic result = await _authService.authRegister(email: emailInput!, password: passwordInput!, username: usernameInput!);
           //* If result == null, register has error, If result != null == userData, register is successful
           if (this.mounted) {
             setState(() {
@@ -170,7 +170,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   context: context, 
                   title: 'Successfully registered account \n\nPlease verify your account through the link sent to your email $emailInput',
                   isAutoHide: false,
-                  dismissAction: () => widget.changeScreen(),
+                  dismissAction: (type) => widget.changeScreen!(),
                 );
               }
               loadingState = false;
@@ -186,7 +186,7 @@ class _RegisterPageState extends State<RegisterPage> {
   }
 
   signInBtnAction() {
-    widget.changeScreen();
+    widget.changeScreen!();
   }
 
   //Email Validation
@@ -196,7 +196,7 @@ class _RegisterPageState extends State<RegisterPage> {
     } else if (!emailRegex.hasMatch(value)) {
       return 'Invalid email format';
     }
-    return null;
+    return null!;
   }
 
   //Username Validation
@@ -206,7 +206,7 @@ class _RegisterPageState extends State<RegisterPage> {
     } else if (value.length > 20) {
       return 'Username must not be more than 20 characters';
     }
-    return null;
+    return null!;
   }
 
   //Password Validation
@@ -216,7 +216,7 @@ class _RegisterPageState extends State<RegisterPage> {
     } else if (value.length<6) {
       return 'Password must be more than 6 characters';
     }
-    return null;
+    return null!;
   }
 
   //Username onChanged Function
@@ -236,8 +236,8 @@ class _RegisterPageState extends State<RegisterPage> {
 }
 
 class TitleText extends StatelessWidget {
-  final String title;
-  final double fontSize;
+  final String ?title;
+  final double ?fontSize;
   TitleText({this.title, this.fontSize});
 
   @override
@@ -246,7 +246,7 @@ class TitleText extends StatelessWidget {
       alignment: AlignmentDirectional.topStart,
       child: Text(
         '$title',
-        style: TextFontStyle.customFontStyle( fontSize ),
+        style: TextFontStyle.customFontStyle( fontSize! ),
       )
     );
   }

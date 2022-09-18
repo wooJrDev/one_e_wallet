@@ -16,10 +16,10 @@ class BudgetTrackingPage extends StatefulWidget {
 class _BudgetTrackingPageState extends State<BudgetTrackingPage> {
 
   double _currentSpent = 150;
-  double _currentBudget = 200;
-  int budgetPercentage;
-  int budgetPercentageValue;
-  String _budgetAmount;
+  double ?_currentBudget = 200;
+  int ?budgetPercentage;
+  int ?budgetPercentageValue;
+  String ?_budgetAmount;
   String _budgetErrorMsg = "";
 
   
@@ -33,7 +33,7 @@ class _BudgetTrackingPageState extends State<BudgetTrackingPage> {
       onTap: () => removeFocus(),
       child: Scaffold(
         backgroundColor: ColourTheme.lightBackground,
-        appBar: backButtonAppBar(context: context, title: "Budget Tracking"),
+        appBar: BackButtonAppBar(context: context, title: "Budget Tracking"),
         body: StreamBuilder(
           stream: DatabaseService().getMonthlyTrx(),
           builder: (context, snapshot) {
@@ -41,8 +41,8 @@ class _BudgetTrackingPageState extends State<BudgetTrackingPage> {
             if (!snapshot.hasData) {
               _currentSpent = 0.00;
             } else {
-              List<TrxCardModel> resultLst = snapshot.data;
-              double totalAmount = resultLst.fold(0, (total, item) => total.toDouble() + item.trxAmount );
+              List<TrxCardModel>? resultLst = snapshot.data as List<TrxCardModel>?;
+              double totalAmount = resultLst!.fold(0, (total, item) => total.toDouble() + item.trxAmount! );
               _currentSpent = totalAmount;
             } 
 
@@ -51,8 +51,8 @@ class _BudgetTrackingPageState extends State<BudgetTrackingPage> {
               builder: (context, snapshot) {
 
                 if (snapshot.hasData) {
-                  UserModel user = snapshot.data;
-                  _currentBudget = user.userBudgetLimit;
+                  UserModel? user = snapshot.data as UserModel?;
+                  _currentBudget = user!.userBudgetLimit;
                   getBudgetPercentage();
                   return body();
 
@@ -74,10 +74,10 @@ class _BudgetTrackingPageState extends State<BudgetTrackingPage> {
   getBudgetPercentage() {
     try {
       //* Will produce Infinity or NaN toInt error when [currentBudget] is null
-      int result = ( ( _currentSpent * 100 ) /  _currentBudget ).round(); 
+      int result = ( ( _currentSpent * 100 ) /  _currentBudget! ).round(); 
       // int result = ( ( _currentSpent ?? 55 * 100 ) / _currentBudget ?? 155 ).round(); 
       budgetPercentage = result > 100 ? 100 : result;
-      budgetPercentageValue = 100 - budgetPercentage;
+      budgetPercentageValue = 100 - budgetPercentage!;
     } catch(e) {
       budgetPercentage = 0;
       budgetPercentageValue = null;
@@ -85,7 +85,7 @@ class _BudgetTrackingPageState extends State<BudgetTrackingPage> {
     return true; //? What is this for?
   }
 
-  bool budgetAmountValidation({@required double budgetAmountInput}) {
+  bool budgetAmountValidation({required double budgetAmountInput}) {
     if (budgetAmountInput == null) {
       setState(() {
         _budgetErrorMsg = "The budget limit cannot be empty";
@@ -104,7 +104,7 @@ class _BudgetTrackingPageState extends State<BudgetTrackingPage> {
     return true;
   }
 
-  Widget budgetCardInfo({@required String title, String amount, Color titleColor, Color amountColor}) {
+  Widget budgetCardInfo({required String title, String ?amount, Color ?titleColor, Color ?amountColor}) {
     return Expanded(
       child: Container(
         padding: EdgeInsets.all(14),
@@ -117,8 +117,8 @@ class _BudgetTrackingPageState extends State<BudgetTrackingPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text('$title', style: TextFontStyle.customFontStyle( TextFontStyle.budgetTrackingPage_budgetInfoTitle, color: titleColor) ),
-            Text('$amount', style: TextFontStyle.customFontStyle( TextFontStyle.budgetTrackingPage_budgetInfoAmount, color: amountColor, fontWeight: FontWeight.w900 ) ),
+            Text('$title', style: TextFontStyle.customFontStyle( TextFontStyle.budgetTrackingPage_budgetInfoTitle, color: titleColor!) ),
+            Text('$amount', style: TextFontStyle.customFontStyle( TextFontStyle.budgetTrackingPage_budgetInfoAmount, color: amountColor!, fontWeight: FontWeight.w900 ) ),
           ],
         )
       ),
@@ -192,7 +192,7 @@ class _BudgetTrackingPageState extends State<BudgetTrackingPage> {
       child: CircularPercentIndicator(
         radius: 280,
         lineWidth: 50.0,
-        percent:  budgetPercentage == null ? 0 : budgetPercentage/ 100 ,
+        percent:  budgetPercentage == null ? 0 : budgetPercentage! / 100 ,
         animation: true,
         animateFromLastPercent: true,
         circularStrokeCap: CircularStrokeCap.butt,
@@ -225,7 +225,7 @@ class _BudgetTrackingPageState extends State<BudgetTrackingPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                budgetCardInfo(title: 'Available Budget:', amount: 'RM${_currentBudget.toStringAsFixed(2)}', titleColor: ColourTheme.orange , amountColor: ColourTheme.cashIn),
+                budgetCardInfo(title: 'Available Budget:', amount: 'RM${_currentBudget!.toStringAsFixed(2)}', titleColor: ColourTheme.orange , amountColor: ColourTheme.cashIn),
                 SizedBox(width: 10),
                 budgetCardInfo(title: 'Current Month Expenses:', amount: 'RM${_currentSpent.toStringAsFixed(2)}', titleColor: ColourTheme.fontBlue, amountColor: ColourTheme.cashOut),
               ],
@@ -251,8 +251,8 @@ class _BudgetTrackingPageState extends State<BudgetTrackingPage> {
               child: Text('Update Budget Limit', style: TextFontStyle.customFontStyle(TextFontStyle.budgetTrackingPage_updateBudgetButton),),
               onPressed: () async {
                 removeFocus();
-                double budgetAmount = budgetAmountControl.text.isEmpty ? null : double.parse( budgetAmountControl.text );
-                if ( budgetAmountValidation( budgetAmountInput: budgetAmount ?? null ) ) {
+                double? budgetAmount = budgetAmountControl.text.isEmpty ? null : double.parse( budgetAmountControl.text );
+                if ( budgetAmountValidation( budgetAmountInput: budgetAmount! ) ) {
                   dynamic updateResult = await DatabaseService().updateBudgetLimit(budgetAmount: budgetAmount);
                   if (updateResult) {
                     print('Update successful');

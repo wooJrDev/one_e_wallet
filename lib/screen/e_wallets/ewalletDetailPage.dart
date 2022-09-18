@@ -14,7 +14,7 @@ class EwalletDetailPage extends StatefulWidget {
 
   final EwalletsCardModel ewallet;
 
-  EwalletDetailPage({@required this.ewallet});
+  EwalletDetailPage({required this.ewallet});
 
   @override
   _EwalletDetailPageState createState() => _EwalletDetailPageState();
@@ -22,13 +22,13 @@ class EwalletDetailPage extends StatefulWidget {
 
 class _EwalletDetailPageState extends State<EwalletDetailPage> {
 
-  List<TrxCardModel> trxList = [];
+  List<TrxCardModel> ?trxList = [];
   List<String> toggleButtonLst = ['All', 'Reload', 'Expense'];
   String trxToggleStatus = "All";
   double _ewalletCardHeight = 220;
   ScrollController _scrollToTopController = ScrollController();
-  List<EwalletsCardModel> ewalletDetail;
-  double updatedEwalletBalance;
+  List<EwalletsCardModel> ?ewalletDetail;
+  double ?updatedEwalletBalance;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class _EwalletDetailPageState extends State<EwalletDetailPage> {
 
     return Scaffold(
       backgroundColor: ColourTheme.lightBackground,
-      appBar: backButtonAppBar(context: context, title: '${widget.ewallet.eWalletType} E-wallet'),
+      appBar: BackButtonAppBar(context: context, title: '${widget.ewallet.eWalletType} E-wallet'),
       body: Container(
         height: MediaQuery.of(context).size.height,
         padding: EdgeInsets.fromLTRB(GeneralPositioning.mainSmallPadding, GeneralPositioning.mainSmallPadding, GeneralPositioning.mainSmallPadding, GeneralPositioning.mainPadding),
@@ -47,11 +47,11 @@ class _EwalletDetailPageState extends State<EwalletDetailPage> {
           // mainAxisSize: MainAxisSize.max,
           children: <Widget>[
             StreamBuilder(
-              stream: DatabaseService().getEwalletUsers(isSpecificUserId: true, ewalletUserId: [widget.ewallet.eWalletUserId]),
+              stream: DatabaseService().getEwalletUsers(isSpecificUserId: true, ewalletUserId: [widget.ewallet.eWalletUserId!]),
               builder: (context, snapshot) {
                 
                 if (snapshot.hasData) {
-                  ewalletDetail = snapshot.data;
+                  ewalletDetail = snapshot.data as List<EwalletsCardModel>?;
                 }
 
                 return Container(
@@ -95,7 +95,7 @@ class _EwalletDetailPageState extends State<EwalletDetailPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'RM${ewalletDetail[0].eWalletBalance.toStringAsFixed(2)  ?? "widget.ewallet.eWalletBalance.toStringAsFixed(2)"}',
+                                  'RM${ewalletDetail?[0].eWalletBalance?.toStringAsFixed(2)  ?? "widget.ewallet.eWalletBalance.toStringAsFixed(2)"}',
                                   style: TextFontStyle.customFontStyle(TextFontStyle.ewalletCard_balance),
                                 ),
                                 Text(
@@ -123,7 +123,7 @@ class _EwalletDetailPageState extends State<EwalletDetailPage> {
                                 )
                               ),
                             ),
-                            onPressed: () => Navigator.push(context, MaterialPageRoute( builder: (context) => IndvEwalletReloadPage( ewalletDetail: ewalletDetail[0] ) ) )
+                            onPressed: () => Navigator.push(context, MaterialPageRoute( builder: (context) => IndvEwalletReloadPage( ewalletDetail: ewalletDetail![0] ) ) )
                               .then((value) {setState(() {});}),
                           ),
                         ),
@@ -150,7 +150,7 @@ class _EwalletDetailPageState extends State<EwalletDetailPage> {
                         ),
                         TextButton(
                           child: Text('See All', style: TextStyle(fontSize: TextFontStyle.seeAllButton)),
-                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AllTrxPage(ewalletType: widget.ewallet.eWalletType,))),
+                          onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => AllTrxPage(ewalletType: widget.ewallet.eWalletType!,))),
                         ),
                       ],
                     ),
@@ -161,7 +161,7 @@ class _EwalletDetailPageState extends State<EwalletDetailPage> {
                       buttonValue: trxToggleStatus,
                       onTap: (value) => setState( () { 
                         trxToggleStatus = value;
-                        if (trxList.isNotEmpty) {
+                        if (trxList!.isNotEmpty) {
                           _scrollToTopController.animateTo(
                             _scrollToTopController.position.minScrollExtent,
                             duration: Duration( milliseconds: 300 ),
@@ -194,23 +194,23 @@ class _EwalletDetailPageState extends State<EwalletDetailPage> {
                             );
                           }else {
 
-                            trxList  = snapshot.data;
+                            trxList  = snapshot.data!;
 
                             switch (trxToggleStatus) {
-                              case "Reload" : trxList = TrxCardModel().getTrxReloadLst(trxList);
+                              case "Reload" : trxList = TrxCardModel().getTrxReloadLst(trxList!);
                               break;
 
-                              case "Expense" : trxList = TrxCardModel().getTrxExpenseLst(trxList);
+                              case "Expense" : trxList = TrxCardModel().getTrxExpenseLst(trxList!);
                               break;
                             }
                           
-                          trxList = trxList.where((indvTrx) => indvTrx.trxMethod == widget.ewallet.eWalletType || indvTrx.trxRecipient == widget.ewallet.eWalletType).toList();
+                          trxList = trxList!.where((indvTrx) => indvTrx.trxMethod == widget.ewallet.eWalletType || indvTrx.trxRecipient == widget.ewallet.eWalletType).toList();
                           //Sort based on DateTime descending order
-                          trxList.sort( (a, b) => TrxCardModel().getDateTimeFormat(dateTime: b.trxDateTime).compareTo( TrxCardModel().getDateTimeFormat(dateTime: a.trxDateTime) ) );
+                          trxList!.sort( (a, b) => TrxCardModel().getDateTimeFormat(dateTime: b.trxDateTime!).compareTo( TrxCardModel().getDateTimeFormat(dateTime: a.trxDateTime!) ) );
                           
 
                             return Visibility(
-                              visible: trxList.isEmpty ? false: true,
+                              visible: trxList!.isEmpty ? false: true,
                               replacement: Container(
                                 padding: EdgeInsets.all(GeneralPositioning.mainPadding),
                                 child: Column(
@@ -227,7 +227,7 @@ class _EwalletDetailPageState extends State<EwalletDetailPage> {
                               ),
                               child: ListView.builder(
                                 controller: _scrollToTopController,
-                                itemCount: trxList.length > 4 ? 4 : trxList.length,
+                                itemCount: trxList!.length > 4 ? 4 : trxList!.length,
                                 itemBuilder: (context, index) {
                                   return Card(
                                     clipBehavior: Clip.antiAlias,
@@ -240,7 +240,7 @@ class _EwalletDetailPageState extends State<EwalletDetailPage> {
                                       child: InkWell(
                                         splashColor: ColourTheme.inkWellBlue,
                                         onTap: () {
-                                          showDialog(context: context, builder: (context) => TrxPopUpDialog(trxCard: trxList[index], onPressed: () => Navigator.pop(context), ));
+                                          showDialog(context: context, builder: (context) => TrxPopUpDialog(trxCard: trxList![index], onPressed: () => Navigator.pop(context), ));
                                         },
                                         child: Padding(
                                           padding: EdgeInsets.fromLTRB(15, 10, 10, 10),
@@ -249,7 +249,7 @@ class _EwalletDetailPageState extends State<EwalletDetailPage> {
                                             children: <Widget>[
                                               Row(
                                                 children: <Widget>[
-                                                  FaIcon(TrxCardModel().getTrxCardStyle(trxList[index], dataType: "Icon"), size: TextFontStyle.listTile_faIconSize, color: ColourTheme.fontBlue,),
+                                                  FaIcon(TrxCardModel().getTrxCardStyle(trxList![index], dataType: "Icon"), size: TextFontStyle.listTile_faIconSize, color: ColourTheme.fontBlue,),
                                                   SizedBox(width: 15,),
                                                   Container(
                                                     width: 150,
@@ -257,17 +257,17 @@ class _EwalletDetailPageState extends State<EwalletDetailPage> {
                                                       crossAxisAlignment: CrossAxisAlignment.start,
                                                       children: [
                                                         Text( //Title
-                                                          '${trxList[index].trxType}: ${TrxCardModel().getTrxCardStyle(trxList[index], dataType: "title")}', 
+                                                          '${trxList?[index].trxType}: ${TrxCardModel().getTrxCardStyle(trxList![index], dataType: "title")}', 
                                                           overflow: TextOverflow.ellipsis,
                                                           style: TextFontStyle.customFontStyle(TextFontStyle.historyPage_listTile_title, fontWeight: FontWeight.w900, color: ColourTheme.fontBlue)
                                                         ),
                                                         Text( //Desc (Paying/Reloading to )
-                                                          '${trxList[index].trxRecipient ?? trxList[index].trxMethod}', 
+                                                          '${trxList?[index].trxRecipient ?? trxList?[index].trxMethod}', 
                                                           overflow: TextOverflow.ellipsis,
                                                           style: TextFontStyle.customFontStyle(TextFontStyle.historyPage_listTile_subtitle, fontWeight: FontWeight.w600, color: ColourTheme.fontBlue)
                                                         ),
                                                         Text( //Desc (Date)
-                                                          '${TrxCardModel().getTrxDate(dateTime: trxList[index].trxDateTime)}', 
+                                                          '${TrxCardModel().getTrxDate(dateTime: trxList![index].trxDateTime!)}', 
                                                           style: TextFontStyle.customFontStyle(TextFontStyle.historyPage_listTile_subtitle, fontWeight: FontWeight.w600, color: ColourTheme.fontBlue)
                                                         ),
                                                       ],
@@ -276,8 +276,8 @@ class _EwalletDetailPageState extends State<EwalletDetailPage> {
                                                 ],
                                               ),
                                               Text(
-                                                '${TrxCardModel().getTrxCardStyle(trxList[index], dataType: "priceLabel")}RM${trxList[index].trxAmount.toStringAsFixed(2)}', 
-                                                style: TextFontStyle.customFontStyle(TextFontStyle.historyPage_listTile_trailing, fontWeight: FontWeight.w900, color: TrxCardModel().getTrxCardStyle(trxList[index], dataType: "Colour"))
+                                                '${TrxCardModel().getTrxCardStyle(trxList![index], dataType: "priceLabel")}RM${trxList?[index].trxAmount!.toStringAsFixed(2)}', 
+                                                style: TextFontStyle.customFontStyle(TextFontStyle.historyPage_listTile_trailing, fontWeight: FontWeight.w900, color: TrxCardModel().getTrxCardStyle(trxList![index], dataType: "Colour"))
                                               ),
                                             ],
                                           ),

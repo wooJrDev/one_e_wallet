@@ -12,10 +12,12 @@ void main() async {
 } 
 
 class App extends StatelessWidget {
+  UserModel ?blank;
   @override
   Widget build(BuildContext context) {
     return StreamProvider<UserModel>.value(
       value: AuthService().user,
+      initialData: blank!,
       child: MaterialApp(
         title: 'UE-wallet',
         theme: ThemeData(

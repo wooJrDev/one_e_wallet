@@ -2,7 +2,7 @@ import 'package:credit_card_validator/credit_card_validator.dart';
 import 'package:credit_card_validator/validation_results.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_masked_text/flutter_masked_text.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:one_e_sample/firebase/database.dart';
 import 'package:one_e_sample/models/userModel.dart';
@@ -31,7 +31,7 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
   var cardNameControl = TextEditingController();
   var cardValidControl = TextEditingController();
   // var cardCvvControl = TextEditingController();
-  TabController tabController;
+  TabController ?tabController;
   CreditCardValidator ccValidator = CreditCardValidator();
 
   final _cardPaymentFormKey = GlobalKey<FormState>();
@@ -42,25 +42,25 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
   List<String> bankTypesLst = ['RHB Bank', 'Maybank', 'Public Bank', 'CIMB Bank', 'Hong Leong Bank'];
 
   //Reload Amount
-  String _reloadAmount;
+  String ?_reloadAmount;
   String _reloadErrorMsg = "";
   ///Payment Details
   //Credit/Debit card payment detail
   // String cardNumber;
   // String cardName;
-  String cardType;
+  String ?cardType;
   dynamic cardTypeIcon;
   // String cardValid;
   // String cardCvv;
   //FPX payment detail
-  String bankName;
+  String ?bankName;
   //Pin payment detail
   // String reloadPinNum;
-  UserModel userDetail;
+  UserModel ?userDetail;
   
 
   var cardNumber;
-  CCNumValidationResults  cardNumberResult;
+  CCNumValidationResults  ?cardNumberResult;
   
 
   int _activePaymentMethodBtn = 0; //Highlight default paymentMethod active button
@@ -76,7 +76,7 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
 
   @override
   void dispose() {
-    tabController.dispose();
+    tabController?.dispose();
     super.dispose();
   }
 
@@ -87,7 +87,7 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
       onTap: () => removeFocus(),
       child: Scaffold(
         backgroundColor: ColourTheme.lightBackground,
-        appBar: backButtonAppBar(context: context, title: 'Reload UE-wallet'),
+        appBar: BackButtonAppBar(context: context, title: 'Reload UE-wallet'),
         body: ListView(
           children: <Widget>[
             reloadEwalletForm(),
@@ -139,16 +139,16 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
                 textStyle: TextFontStyle.customFontStyle(TextFontStyle.uewalletReloadPage_slideToConfirmBtn, color: ColourTheme.fontLightGrey),
                 onConfirmation: () async {
                   removeFocus();
-                  String paymentMethod;
+                  late String paymentMethod;
                   bool _validateReloadDetail = false;
                   switch (_activePaymentMethodBtn) {
                     case 0: {
-                      if (_cardPaymentFormKey.currentState.validate()) {
+                      if (_cardPaymentFormKey.currentState!.validate()) {
                         var trimCCNum = maskCardNumber.text.replaceAll(new RegExp(r"\s+"), ""); //? TODO: Is this needed?
-                        if (cardNumberResult.ccType.toString().split(".").last == "visa") {
+                        if (cardNumberResult?.ccType.toString().split(".").last == "visa") {
                           paymentMethod = "Visa";
                         }
-                        else if (cardNumberResult.ccType.toString().split(".").last == "mastercard") {
+                        else if (cardNumberResult?.ccType.toString().split(".").last == "mastercard") {
                           paymentMethod = "MasterCard";
                         }
                         paymentMethod = paymentMethod + " ${maskCardNumber.text.split(" ").last}";
@@ -158,7 +158,7 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
                     break;
                     
                     case 1: {
-                      if (_bankPaymentFormKey.currentState.validate()) {
+                      if (_bankPaymentFormKey.currentState!.validate()) {
                         paymentMethod = "FPX $bankName";
                         _validateReloadDetail = true;
                       }
@@ -166,7 +166,7 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
                     break;
 
                     case 2: {
-                      if (_pinPaymentFormKey.currentState.validate()) {
+                      if (_pinPaymentFormKey.currentState!.validate()) {
                         paymentMethod = "PIN ${pinReloadNumControl.text}";
                         _validateReloadDetail = true;
                       }
@@ -174,17 +174,17 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
                     break;
                   }
 
-                  if (_validateReloadDetail && reloadAmountValidation(userDetail.userUeAccBalance, double.parse(_reloadAmount ?? 0.toStringAsFixed(0))) ) {
+                  if (_validateReloadDetail && reloadAmountValidation(userDetail?.userUeAccBalance, double.parse(_reloadAmount ?? 0.toStringAsFixed(0))) ) {
                     print('Reload UE-wallet payment method: $paymentMethod');
                     //* Perform reload action
-                    bool updateResult = await DatabaseService().performReloadUEwalletTrx(reloadedAmount: double.parse(_reloadAmount), paymentMethod: paymentMethod);
+                    bool updateResult = await DatabaseService().performReloadUEwalletTrx(reloadedAmount: double.parse(_reloadAmount!), paymentMethod: paymentMethod);
                     if (updateResult)
-                      popUpCustomSuccess(context: context, title: "Successfully reloaded UE-wallet", dismissAction: () => Navigator.pop(context) );
+                      popUpCustomSuccess(context: context, title: "Successfully reloaded UE-wallet", dismissAction: (type) => Navigator.pop(context) );
                     else 
                       popUpFailed(
                         context: context, 
                         title: "Failed to reload UE-wallet", 
-                        dismissAction: () { 
+                        dismissAction: (type) { 
                           setState(() {
                             resetValue();
                             reloadAmountControl.value = TextEditingValue.empty;
@@ -201,8 +201,8 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
     );
   }
 
-  bool reloadAmountValidation(double uewalletBalance, double reloadAmountInput) {
-    if (reloadAmountInput > 1000) {
+  bool reloadAmountValidation(double ?uewalletBalance, double ?reloadAmountInput) {
+    if (reloadAmountInput! > 1000) {
       setState(() {
         _reloadErrorMsg = "Reload amount cannot exceed RM1000";
       });
@@ -227,17 +227,17 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
     cardNumber = trimSpaceWithin(maskCardNumber.text);
     cardNumberResult = ccValidator.validateCCNum(cardNumber);
 
-    if (cardNumberResult.ccType.toString().split(".").last == "visa" && cardNumber.length >= 4) {
+    if (cardNumberResult?.ccType.toString().split(".").last == "visa" && cardNumber.length >= 4) {
       setState(() {
         cardTypeIcon = FontAwesomeIcons.ccVisa;
       });
     }
-    else if (cardNumberResult.ccType.toString().split(".").last == "mastercard" && cardNumber.length >= 4) {
+    else if (cardNumberResult?.ccType.toString().split(".").last == "mastercard" && cardNumber.length >= 4) {
       setState(() {
         cardTypeIcon = FontAwesomeIcons.ccMastercard;
       });
     }
-    else if (cardNumberResult.ccType.toString().split(".").last == "unknown") {
+    else if (cardNumberResult?.ccType.toString().split(".").last == "unknown") {
       setState(() {
         cardTypeIcon = null;
       });
@@ -250,16 +250,16 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
       cardNumberResult = ccValidator.validateCCNum(cardNumber);
     }  
     print('Card num length: ${cardNumber.length}');
-    print('Card num valid: ${cardNumberResult.isValid}');
-    print('Card type: ${cardNumberResult.ccType}');
-    if (!cardNumberResult.isPotentiallyValid)
-      return cardNumberResult.message;
-    else if ( !(cardNumberResult.ccType.toString().split(".").last == "visa" || cardNumberResult.ccType.toString().split(".").last == "mastercard") )
+    print('Card num valid: ${cardNumberResult?.isValid}');
+    print('Card type: ${cardNumberResult?.ccType}');
+    if (!cardNumberResult!.isPotentiallyValid)
+      return cardNumberResult!.message;
+    else if ( !(cardNumberResult!.ccType.toString().split(".").last == "visa" || cardNumberResult?.ccType.toString().split(".").last == "mastercard") )
       return "Only Visa and Mastercard are accepted";
-    else if (!cardNumberResult.isValid && cardNumber.length < 16)
+    else if (!cardNumberResult!.isValid && cardNumber.length < 16)
       return "Invalid credit/debit card number length";
 
-    return null;
+    return null!;
   }
 
   String validateCardName(value) {
@@ -270,7 +270,7 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
       return "Card holder name can only contain alphabets";
     else if (cardNameControl.text.length > 21)
       return "Name must not exceed 21 characters";
-    return null;
+    return null!;
   }
 
   String validateCardValid(value) {
@@ -281,7 +281,7 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
     else if (!cardValid.isValid) {
       return cardValid.message;
     }
-    return null;
+    return null!;
     // cardValid.message
     // if ()
   }
@@ -291,13 +291,13 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
       return "CVV cannot be empty";
     else if (maskCardCvv.text.length < 3)
       return 'CVV must be 3 digits long';
-    return null;
+    return null!;
   }
 
   String validateBankName(value) {
     if (bankName == null) 
       return "Please select a bank from the provided list";
-    return null;
+    return null!;
   }
 
   String validatePinNum(value) {
@@ -307,12 +307,12 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
       return 'Pin code must be alphanumeric only without space or special characters';
     else if (pinReloadNumControl.text.length < 6 || pinReloadNumControl.text.length > 10 )
       return "Pin code must be within 6 to 10 characters";
-    return null;
+    return null!;
   }
 
   setCardTypeIcon() => cardTypeIcon == null ? FaIcon(FontAwesomeIcons.accessibleIcon, color: Colors.transparent,) : FaIcon(cardTypeIcon);
 
-  Widget reloadOptionTitle({@required String title}) {
+  Widget reloadOptionTitle({required String title}) {
     return Padding(
       padding: const EdgeInsets.only(left: GeneralPositioning.mainPadding, top: GeneralPositioning.mainMediumPadding, bottom: 10),
       child: Text(
@@ -354,9 +354,9 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
               if (!snapshot.hasData) {
                 return CircularProgressIndicator();
               } else {
-                userDetail = snapshot.data;
+                userDetail = snapshot.data as UserModel?;
                 return Text(
-                  'RM${userDetail.userUeAccBalance.toStringAsFixed(2)}',
+                  'RM${userDetail?.userUeAccBalance?.toStringAsFixed(2)}',
                   style: TextFontStyle.customFontStyle(TextFontStyle.ewalletReloadPage_title),
                 );
               }
@@ -415,7 +415,7 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
     );
   }
 
-  Widget reloadOptionButton({@required String reloadAmountInput}) {
+  Widget reloadOptionButton({required String reloadAmountInput}) {
     return ElevatedButton(
       style: ButtonStyle(
         padding: MaterialStateProperty.all(
@@ -432,14 +432,14 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
       onPressed: () {
         _reloadAmount = reloadAmountInput;
         reloadAmountControl.value = TextEditingValue(
-          text: _reloadAmount,
-          selection: TextSelection.fromPosition( TextPosition( offset: _reloadAmount.length ) ),
+          text: _reloadAmount!,
+          selection: TextSelection.fromPosition( TextPosition( offset: _reloadAmount!.length ) ),
         );
       },
     );
   }
 
-  Widget paymentMethodButton({@required String title, @required int tabIndex, double maxHeight, double minHeight, GlobalKey<FormState> resetForm}) {
+  Widget paymentMethodButton({required String title, required int tabIndex, double ?maxHeight, double ?minHeight, GlobalKey<FormState> ?resetForm}) {
     return SizedBox(
       width: 100,
       child: ElevatedButton(
@@ -456,14 +456,14 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
         ),
         child: Text('$title', style: TextFontStyle.customFontStyle(TextFontStyle.ewalletReloadPage_quickReloadOptionButton)),
         onPressed: () async {
-          tabController.animateTo( ( tabController.index = tabIndex ) );
+          tabController?.animateTo( ( tabController!.index = tabIndex ) );
           FocusScope.of(context).unfocus();
           setState( () {
             print('current index: $tabIndex, active button: $_activePaymentMethodBtn');
           _activePaymentMethodBtn = tabIndex;
           print('NEW current index: $tabIndex, active button: $_activePaymentMethodBtn');
-          _paymentMethodTabMinheight = minHeight;
-          _paymentMethodTabMaxHeight = maxHeight;
+          _paymentMethodTabMinheight = minHeight!;
+          _paymentMethodTabMaxHeight = maxHeight!;
           resetValue();
           // resetForm.currentState.reset(); //* this approach does not work (causes issue: will make clicking the payment button have a delayed effect where the active colour won't be registered but the form switches)
         } );
@@ -507,7 +507,7 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
     );
   }
 
-  Widget reloadEwalletTextFormField({String hintText, Function validation, Function onChanged, TextAlign textAlign, TextEditingController controller, TextInputType keyboardType, AutovalidateMode validationMode, FaIcon surfixIcon}) {
+  Widget reloadEwalletTextFormField({String ?hintText, Function ?validation, Function ?onChanged, TextAlign ?textAlign, TextEditingController ?controller, TextInputType ?keyboardType, AutovalidateMode ?validationMode, FaIcon ?surfixIcon}) {
     return Container(
       // height: ,
       color: Colors.transparent,
@@ -521,13 +521,13 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
         decoration: reloadPaymentInputDecoration(hintText: hintText, surfixIcon: surfixIcon),
         keyboardType: keyboardType,
         autovalidateMode: validationMode,
-        onChanged: onChanged,
-        validator: validation
+        onChanged: onChanged as void Function(String)?,
+        validator: validation as String? Function(String?)?
       ),
     );
   }
 
-  Widget bankTypeDropDownFormField({Function validate}) {
+  Widget bankTypeDropDownFormField({Function ?validate}) {
     return Container(
       margin: EdgeInsets.only(bottom: GeneralPositioning.mainSmallPadding),
       child: DropdownButtonFormField(
@@ -541,8 +541,8 @@ class _UEWalletReloadPageState extends State<UEWalletReloadPage> with TickerProv
             )
           );
         }).toList(),
-        validator: validate,
-        onChanged: (value) => setState( () { bankName = value; } ),
+        validator: validate as String? Function(String?)?,
+        onChanged: (value) => setState( () { bankName = value as String?; } ),
         ),
     );
   }

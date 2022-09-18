@@ -33,7 +33,7 @@ class _HomeNavigationState extends State<HomeNavigation> {
 
   void _openEndDrawer() {
     print('Opening Drawer');
-    _scaffoldKey.currentState.openEndDrawer();
+    _scaffoldKey.currentState!.openEndDrawer();
   }
 
   @override

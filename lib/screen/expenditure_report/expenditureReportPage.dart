@@ -17,13 +17,13 @@ class ExpenditureReportPage extends StatefulWidget {
 
 class _ExpenditureReportPageState extends State<ExpenditureReportPage> {
   
-  double totalDailyTrxAmount;
-  double totalWeeklyTrxAmount;
-  double totalMonthlyTrxAmount;
+  double ?totalDailyTrxAmount;
+  double ?totalWeeklyTrxAmount;
+  double ?totalMonthlyTrxAmount;
 
-  List<DailyChart> dailyTrx;
-  List<WeeklyChart> wkTrx;
-  List<MonthlyChart> mthTrx;
+  List<DailyChart> ?dailyTrx;
+  List<WeeklyChart> ?wkTrx;
+  List<MonthlyChart> ?mthTrx;
 
   TrxCardModel trxCardModel = TrxCardModel();
 
@@ -36,7 +36,7 @@ class _ExpenditureReportPageState extends State<ExpenditureReportPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColourTheme.lightBackground,
-      appBar: backButtonAppBar(context: context, title: 'Expenditure Report'),
+      appBar: BackButtonAppBar(context: context, title: 'Expenditure Report'),
       body: RefreshIndicator(
         onRefresh: _refreshPage,
         child: Container(
@@ -49,7 +49,7 @@ class _ExpenditureReportPageState extends State<ExpenditureReportPage> {
                   if (snapshot.hasData) {
                     print('got daily data');
 
-                    List<TrxCardModel> dailyTrxLst = snapshot.data;
+                    List<TrxCardModel> dailyTrxLst = snapshot.data as List<TrxCardModel> ;
 
                     totalDailyTrxAmount = trxCardModel.getTotalTrx(dailyTrxLst);
 
@@ -63,14 +63,14 @@ class _ExpenditureReportPageState extends State<ExpenditureReportPage> {
                     children: <Widget>[
                       expenditureCard(
                         expenditureTitle: 'Daily', 
-                        expenditureAmount: '${totalDailyTrxAmount == null ? "0.00" : totalDailyTrxAmount.toStringAsFixed(2)}'
+                        expenditureAmount: '${totalDailyTrxAmount == null ? "0.00" : totalDailyTrxAmount?.toStringAsFixed(2)}'
                       ),
 
                       Container(
                         // height: 450,
                         margin: EdgeInsets.only(top: GeneralPositioning.mainPadding),
                         padding: EdgeInsets.all(15),
-                        child: CustomDailyLineChart(dailyTrx: dailyTrx)
+                        // child: CustomDailyLineChart(dailyTrx: dailyTrx) //* FIXME: Broken widget
                       ),
                     ],
                   );
@@ -82,7 +82,7 @@ class _ExpenditureReportPageState extends State<ExpenditureReportPage> {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
 
-                    List<TrxCardModel> wkTrxLst = snapshot.data;
+                    List<TrxCardModel> wkTrxLst = snapshot.data as List<TrxCardModel>;
 
                     // trxLst.forEach((element) { 
                     //   print('Weekly Trx Id: ${element.trxId}, Trx Type: ${element.trxType}, Trx Method: ${element.trxMethod}, Trx Recipient: ${element.trxRecipient}, Trx Amount: ${element.trxAmount.toString()}, Trx DateTime: ${element.trxDateTime.toString()},');
@@ -102,14 +102,14 @@ class _ExpenditureReportPageState extends State<ExpenditureReportPage> {
                     children: <Widget>[
                       expenditureCard(
                         expenditureTitle: 'Weekly', 
-                        expenditureAmount: '${totalWeeklyTrxAmount == null ? "0.00" : totalWeeklyTrxAmount.toStringAsFixed(2)}'
+                        expenditureAmount: '${totalWeeklyTrxAmount == null ? "0.00" : totalWeeklyTrxAmount?.toStringAsFixed(2)}'
                       ),
 
                       Container(
                         // height: 450,
                         margin: EdgeInsets.only(top: GeneralPositioning.mainPadding),
                         padding: EdgeInsets.all(15),
-                        child: CustomWeeklyLineChart(wkTrx: wkTrx),
+                        // child: CustomWeeklyLineChart(wkTrx: wkTrx), //* FIXME: Broken widget
                       ),
                     ],
                   );
@@ -122,7 +122,7 @@ class _ExpenditureReportPageState extends State<ExpenditureReportPage> {
 
                   if (snapshot.hasData) {
 
-                    List<TrxCardModel> trxLst = snapshot.data;
+                    List<TrxCardModel> trxLst = snapshot.data as List<TrxCardModel>;
 
                     //* A method to extract Monthly trx grouped by weeks
 
@@ -152,7 +152,7 @@ class _ExpenditureReportPageState extends State<ExpenditureReportPage> {
                     children: <Widget>[
                       expenditureCard(
                         expenditureTitle: 'Monthly', 
-                        expenditureAmount: '${totalMonthlyTrxAmount == null ? "0.00" : totalMonthlyTrxAmount.toStringAsFixed(2)}'
+                        expenditureAmount: '${totalMonthlyTrxAmount == null ? "0.00" : totalMonthlyTrxAmount?.toStringAsFixed(2)}'
                       ),
 
                       Container(
@@ -161,7 +161,7 @@ class _ExpenditureReportPageState extends State<ExpenditureReportPage> {
                         padding: EdgeInsets.all(15),
                         child: Column(
                           children: <Widget>[
-                            CustomMonthlyLineChart(mthTrx: mthTrx),
+                            // CustomMonthlyLineChart(mthTrx: mthTrx), //* FIXME: Broken widget
                           ],
                         ),
                       ),
@@ -176,7 +176,7 @@ class _ExpenditureReportPageState extends State<ExpenditureReportPage> {
     );
   }
 
-  Widget expenditureCard({String expenditureTitle, String expenditureAmount}) {
+  Widget expenditureCard({String ?expenditureTitle, String ?expenditureAmount}) {
     return Container(
       margin: EdgeInsets.only(top: GeneralPositioning.mainPadding, left: GeneralPositioning.mainPadding, right: GeneralPositioning.mainPadding),
       // color: Colors.purpleAccent[100],

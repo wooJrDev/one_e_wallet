@@ -80,8 +80,8 @@ class _EwalletsPageState extends State<EwalletsPage> {
               );
           }else {
 
-            List<EwalletsCardModel> cardlst = snapshot.data;
-            cardlst.sort((a, b) => a.eWalletUserName.compareTo(b.eWalletUserName)); //Sort alphabetically
+            List<EwalletsCardModel> cardlst = snapshot.data as List<EwalletsCardModel> ;
+            cardlst.sort((a, b) => a.eWalletUserName!.compareTo(b.eWalletUserName!)); //Sort alphabetically
             print('Ewallet new length: ${cardlst.length}');
 
             return Visibility(
@@ -156,7 +156,7 @@ class _EwalletsPageState extends State<EwalletsPage> {
                                             onSelected: (value) {
                                               setState(() {
                                                 // print('Print DbEwalletAccountType: ${DatabaseService().getDbEwalletAccType(cardlst[index].eWalletType)}');
-                                                DatabaseService().manageEwalletAcc(ewalletType: DatabaseService().getDbEwalletAccType(cardlst[index].eWalletType));
+                                                DatabaseService().manageEwalletAcc(ewalletType: DatabaseService().getDbEwalletAccType(cardlst[index].eWalletType!));
                                               });
                                             },
                                             itemBuilder: (context) => [
@@ -182,7 +182,7 @@ class _EwalletsPageState extends State<EwalletsPage> {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
                                           Text(
-                                            'RM${cardlst[index].eWalletBalance.toStringAsFixed(2) ?? "Fallback EwalletBalance"}',
+                                            'RM${cardlst[index].eWalletBalance?.toStringAsFixed(2) ?? "Fallback EwalletBalance"}',
                                             style: TextFontStyle.customFontStyle(TextFontStyle.ewalletCard_balance),
                                           ),
                                           Text(

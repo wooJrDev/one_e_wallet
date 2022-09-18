@@ -18,43 +18,43 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
   
   #For firebase related connectivity
-  firebase_core: ^0.7.0
-  firebase_auth: ^0.20.1
-  cloud_firestore: ^0.16.0+1
+  firebase_core: ^1.12.0
+  firebase_auth: ^3.9.0
+  cloud_firestore: ^3.4.8
   #Provides DateTimeFormat
-  intl: ^0.16.1
-  custom_radio_grouped_button: ^1.0.4
+  intl: ^0.17.0
+  custom_radio_grouped_button: ^2.1.2+2
   #Allow using FontAwesome Icons
-  font_awesome_flutter: ^8.12.0
+  font_awesome_flutter: ^10.2.1
   #Provides simple popup dialog
-  awesome_dialog: ^1.3.2
-  provider: ^4.3.3
-  flutter_masked_text: ^0.8.0
-  slide_to_confirm: ^0.0.7
-  credit_card_validator: ^1.2.0
-  percent_indicator: ^2.1.9+1
-  fl_chart: ^0.12.3
-  animations: ^1.1.2
-  page_transition: ^1.1.7+6
+  awesome_dialog: ^3.0.1
+  provider: ^6.0.3
+  flutter_masked_text2: ^0.9.1
+  slide_to_confirm: ^1.1.0
+  credit_card_validator: ^2.0.1
+  percent_indicator: ^4.2.2
+  fl_chart: ^0.55.1
+  animations: ^2.0.4
+  page_transition: ^2.0.9
   #Generates QR code and scanning QR code interface
-  qrscan: ^0.2.20
+  qrscan: ^0.3.3
   #Allows inspecting for necessary camera permission
-  permission_handler: ^5.1.0
+  permission_handler: ^10.0.0
   #Allows changing the default installed icons
-  flutter_launcher_icons: ^0.8.1
+  flutter_launcher_icons: ^0.10.0
   #Toggle switch bettwen daily and monthly in the home page
-  toggle_switch: ^0.1.8
+  toggle_switch: ^2.0.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.0
+  cupertino_icons: ^1.0.5
 
 dev_dependencies:
   flutter_test:

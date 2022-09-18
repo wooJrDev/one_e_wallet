@@ -18,7 +18,7 @@ class DatabaseService {
 
   // final User currentUser = 
 
-  List<String> finalEmailList;
+  List<String> ?finalEmailList;
 
   ///* 4 types of transactions
   /// [Reload UEwallet] => using visa/fpx/pin to reload ue wallet [trxType: Reload]
@@ -27,7 +27,7 @@ class DatabaseService {
   /// [Using Ewallet] => using individual e-wallet (grab, tng, boost) to perform merchant payment [trxtype: Payment]
 
   ///Insert, Update users collection(table)
-  Future createUser({String boostAcc, String grabAcc, String tngAcc, String ueAccBalance, String userBudgetLimit, String userId, String userEmail, String username}) async {
+  Future createUser({String ?boostAcc, String ?grabAcc, String ?tngAcc, String ?ueAccBalance, String ?userBudgetLimit, String ?userId, String ?userEmail, String ?username}) async {
     return await userCollection.doc(userId).set({
       'userBoostAccount': boostAcc ?? "",
       'userGrabAccount': grabAcc ?? "",
@@ -42,8 +42,8 @@ class DatabaseService {
 
   //! TODO: Make the parameters required
   ///Insert, Update ewalletUsers collection(table)
-  Future<bool> createEwalletTrx({String trxType, String trxMethod, String trxRecipient, 
-  double trxAmount, String userId, DateTime dateTime}) async {
+  Future<bool> createEwalletTrx({String ?trxType, String ?trxMethod, String ?trxRecipient, 
+  double ?trxAmount, String ?userId, DateTime ?dateTime}) async {
     var docId = "TRX_" + ewalletTrxCollection.doc().id.substring(0, 10).toUpperCase();
     try {
       await ewalletTrxCollection.doc(docId).set({
@@ -62,8 +62,8 @@ class DatabaseService {
     }
   }
 
-  Future<TrxCardModel> createEwalletTrxWithReceipt({String trxType, String trxMethod, 
-  String trxRecipient, double trxAmount, String userId, DateTime dateTime}) async {
+  Future<TrxCardModel> createEwalletTrxWithReceipt({String ?trxType, String ?trxMethod, 
+  String ?trxRecipient, double ?trxAmount, String ?userId, DateTime ?dateTime}) async {
     var docId = "TRX_" + ewalletTrxCollection.doc().id.substring(0, 10).toUpperCase();
     try {
       await ewalletTrxCollection.doc(docId).set({
@@ -76,16 +76,16 @@ class DatabaseService {
         'trxDateTime': dateTime, 
       });
       return TrxCardModel(
-        trxType: trxType,
-        trxMethod: trxMethod,
-        trxRecipient: trxRecipient,
-        trxAmount: trxAmount,
+        trxType: trxType!,
+        trxMethod: trxMethod!,
+        trxRecipient: trxRecipient!,
+        trxAmount: trxAmount!,
         trxId: docId,
-        trxDateTime: DateFormat( "dd/MM/y hh:mm a" ).format( dateTime ).toString()
+        trxDateTime: DateFormat( "dd/MM/y hh:mm a" ).format( dateTime! ).toString()
         // trxDateTime: DateFormat( "dd/MM/y hh:mm a" ).format( dateTime.add( Duration( hours: 8 ) ) ).toString()
       );
     } on FirebaseException catch(e) {
-      return null;
+      return null!;
     }
   }
 
@@ -102,11 +102,11 @@ class DatabaseService {
   }
 
   ///Insert, Update UE Account or ewallet account balance collection(table)
-  Future updateEwalletBalance({double ewalletBalance, CollectionReference dbCollection, String userId, String fieldName}) async {
+  Future updateEwalletBalance({double ?ewalletBalance, CollectionReference ?dbCollection, String ?userId, String ?fieldName}) async {
     //* if mainEwallet = true, reload to UE Account, if false, reload to individual ewallet Account (Grab, Boost Tng) 
     try {
-      await dbCollection.doc(userId).update({
-        fieldName: FieldValue.increment(ewalletBalance), //* Allows incrementing the value without overriding the previous balance
+      await dbCollection!.doc(userId).update({
+        fieldName!: FieldValue.increment(ewalletBalance!), //* Allows incrementing the value without overriding the previous balance
       });
       return true;
     } on FirebaseException catch (e) {
@@ -116,10 +116,10 @@ class DatabaseService {
   }
 
   /// Update UE Account budget limit
-  Future updateBudgetLimit( { @required double budgetAmount} ) async {
+  Future updateBudgetLimit( { required double ?budgetAmount} ) async {
     //* if mainEwallet = true, reload to UE Account, if false, reload to individual ewallet Account (Grab, Boost Tng) 
     try {
-      await userCollection.doc(_firebaseAuth.currentUser.uid).update({
+      await userCollection.doc(_firebaseAuth.currentUser?.uid).update({
         "userBudgetLimit": budgetAmount,
       });
       return true;
@@ -132,7 +132,7 @@ class DatabaseService {
 
   ///Get firestore ewalletType field based on the given ewalletType
   String getDbEwalletAccType(String ewalletType) {
-    String dbEwalletField;
+    String ?dbEwalletField;
     if (ewalletType == "Boost") {
       dbEwalletField = "userBoostAccount";
     } else if (ewalletType == "Grab") {
@@ -140,29 +140,29 @@ class DatabaseService {
     } else if (ewalletType == "Tng") {
       dbEwalletField = "userTngAccount";
     }
-    return dbEwalletField;
+    return dbEwalletField!;
   }
 
   ///Authenticate ewalletAcc credential and return the ewalletId
-  Future<String> authEwalletUserId({@required String email, @required String password, @required String ewalletType}) async{
+  Future<String> authEwalletUserId({required String ?email, required String ?password, required String ?ewalletType}) async{
     QuerySnapshot qShot = await ewalletUsersCollection
       .where("ewalletType", isEqualTo: ewalletType)
       .where("ewalletEmail", isEqualTo: email)
       .where("ewalletPassword", isEqualTo: password).get();
     if (qShot.docs.isEmpty) {
-      return null; // Account does not exist
+      return null!; // Account does not exist
     } else {
       final ewalletUserId = qShot.docs.map((doc) {
-        return "${doc.data()['ewalletUserId']}";
-      }).reduce((value, element) => null);
+        return "${doc['ewalletUserId']}";
+      }).reduce((value, element) => null!);
       return ewalletUserId;
     }
   }
 
   ///Add/Remove a particular Ewallet account
-  Future<bool> manageEwalletAcc({@required String ewalletType, String ewalletUserId}) async {
+  Future<bool> manageEwalletAcc({required String ?ewalletType, String ?ewalletUserId}) async {
     try {
-      User user = _firebaseAuth.currentUser;
+      User user = _firebaseAuth.currentUser!;
       await userCollection.doc(user.uid).update({
         '$ewalletType':  ewalletUserId ?? "" //ewalletType = boostAcount/grabAccount/tngAccount
       });
@@ -174,23 +174,23 @@ class DatabaseService {
   }
 
   ///Get all added ewallet account (Eg: Grab, Boost Tng)
-  Stream<List<EwalletsCardModel>> getEwalletUsers({List<String> ewalletUserId, bool isSpecificUserId = false}) async*{ //*returning list instead of querysnapshot
+  Stream<List<EwalletsCardModel>> getEwalletUsers({List<String> ?ewalletUserId, bool isSpecificUserId = false}) async*{ //*returning list instead of querysnapshot
     try {
       List<String> ewalletAccLst;
       if (isSpecificUserId) {
-        ewalletAccLst = ewalletUserId;
+        ewalletAccLst = ewalletUserId!;
       } else {
         ewalletAccLst = await queryUserEwalletAcc() ?? [];
       }
       yield* ewalletUsersCollection.where("ewalletUserId", whereIn: ewalletAccLst).snapshots().map(_ewalletAccLstFromSnapshot);
     } catch (e) {
       print(e.toString());
-      yield null;
+      yield null!;
     }
   }
 
-  Future<bool> authEwalletAvailableStatus({String ewalletUserId, String ewalletType}) async {
-    String ewalletTypeFieldName = getDbEwalletAccType(ewalletType);
+  Future<bool> authEwalletAvailableStatus({String ?ewalletUserId, String ?ewalletType}) async {
+    String ewalletTypeFieldName = getDbEwalletAccType(ewalletType!);
 
     QuerySnapshot queryResult = await userCollection.where(ewalletTypeFieldName, isEqualTo: ewalletUserId).get();
     if (queryResult.docs.isEmpty) {
@@ -203,24 +203,24 @@ class DatabaseService {
   ///List of Ewallet Account from snapshot
   List<EwalletsCardModel> _ewalletAccLstFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) => EwalletsCardModel(
-      eWalletUserId: doc.data()['ewalletUserId'],
-      eWalletUserName: doc.data()['ewalletUsername'],
-      eWalletType: doc.data()['ewalletType'],
-      eWalletBalance: double.parse(doc.data()['ewalletBalance'].toString()),
+      eWalletUserId: doc['ewalletUserId'],
+      eWalletUserName: doc['ewalletUsername'],
+      eWalletType: doc['ewalletType'],
+      eWalletBalance: double.parse(doc['ewalletBalance'].toString()),
     )).toList();
   }
 
   /// UserModel from snapshot
   UserModel _userModelFromSnapshot(DocumentSnapshot snapshot) {
     return UserModel(
-      userId: snapshot.data()['userId'],
-      userName: snapshot.data()['userName'],
-      userEmail: snapshot.data()['userEmail'],
-      userUeAccBalance: double.parse(snapshot.data()['userUEwalletBalance'].toString()),
-      userBudgetLimit:double.parse(snapshot.data()['userBudgetLimit'].toString()) ,
-      userBoostAcc: snapshot.data()['userBoostAccount'] ?? "",
-      userGrabAcc: snapshot.data()['userGrabAccount'] ?? "",
-      userTngAcc: snapshot.data()['userTngAccount'] ?? "",
+      userId: snapshot['userId'],
+      userName: snapshot['userName'],
+      userEmail: snapshot['userEmail'],
+      userUeAccBalance: double.parse(snapshot['userUEwalletBalance'].toString()),
+      userBudgetLimit:double.parse(snapshot['userBudgetLimit'].toString()) ,
+      userBoostAcc: snapshot['userBoostAccount'] ?? "",
+      userGrabAcc: snapshot['userGrabAccount'] ?? "",
+      userTngAcc: snapshot['userTngAccount'] ?? "",
     );
   }
 
@@ -229,7 +229,7 @@ class DatabaseService {
     //allTrxUserId would gather the user id of (boost, grab, tng) and UE wallet user id
     List<String> allTrxUserId = await queryUserEwalletAcc();
     allTrxUserId.removeWhere((element) => element.isEmpty);
-    allTrxUserId.add(_firebaseAuth.currentUser.uid);
+    allTrxUserId.add(_firebaseAuth.currentUser!.uid);
     yield* ewalletTrxCollection.where('userId', whereIn: allTrxUserId).snapshots().map(_ewalletTrxLstFromSnapshot); 
   }
 
@@ -240,36 +240,36 @@ class DatabaseService {
         return [];
       } else {
         final testLst =  snapshot.docs.map((doc) => TrxCardModel(
-          trxId: doc.data()['trxId'],
-          trxType: doc.data()['trxType'],
-          trxMethod: doc.data()['trxMethod'],
-          trxRecipient: doc.data()['trxRecipient'],
-          trxAmount: double.parse(doc.data()['trxAmount'].toString()),
+          trxId: doc['trxId'],
+          trxType: doc['trxType'],
+          trxMethod: doc['trxMethod'],
+          trxRecipient: doc['trxRecipient'],
+          trxAmount: double.parse(doc['trxAmount'].toString()),
           trxDateTime: DateFormat('dd/MM/y hh:mm a')
-            .format( doc.data()['trxDateTime'].toDate() ).toString(),
+            .format( doc['trxDateTime'].toDate() ).toString(),
         )).toList();
         return testLst;
       }
     } catch (e) {
       print(e);
-      return null;
+      return null!;
     }
   }
 
   Stream<UserModel> get getUserDetail async*{
     // return userCollection.where(FieldPath.documentId, isEqualTo: "userId2").snapshots();
-    User user = FirebaseAuth.instance.currentUser;
+    User user = FirebaseAuth.instance.currentUser!;
     yield* userCollection.doc(user.uid).snapshots().map((doc) => _userModelFromSnapshot(doc));
   }
 
   Future<List<String>> queryUserEwalletAcc() async {
-    User user = FirebaseAuth.instance.currentUser;
+    User user = FirebaseAuth.instance.currentUser!;
     DocumentSnapshot qshot = await userCollection.doc(user.uid).get();
     List<String> userDetails = [];
     if (qshot.exists) {
-      userDetails.add(qshot.data()['userBoostAccount']);
-      userDetails.add(qshot.data()['userGrabAccount']);
-      userDetails.add(qshot.data()['userTngAccount']);
+      userDetails.add(qshot['userBoostAccount']);
+      userDetails.add(qshot['userGrabAccount']);
+      userDetails.add(qshot['userTngAccount']);
     }
     return userDetails;
   }
@@ -280,22 +280,22 @@ class DatabaseService {
     return _ewalletTrxLstFromSnapshot( querySnap );
   }
 
-  Future<bool> performReloadEwalletTrx({double reloadedAmount, EwalletsCardModel ewalletDetail}) async {
+  Future<bool> performReloadEwalletTrx({double ?reloadedAmount, EwalletsCardModel ?ewalletDetail}) async {
     bool _updateStatus;
     DateTime trxDateTime = DateTime.now();
     try {
       //* Update UE Account on deducted balance
-      _updateStatus = await updateEwalletBalance(dbCollection: userCollection, ewalletBalance: -reloadedAmount, 
-      fieldName: "userUEwalletBalance", userId: _firebaseAuth.currentUser.uid);
+      _updateStatus = await updateEwalletBalance(dbCollection: userCollection, ewalletBalance: -reloadedAmount!, 
+      fieldName: "userUEwalletBalance", userId: _firebaseAuth.currentUser?.uid);
       //* Update Ewallet account reloaded balance
       _updateStatus = await updateEwalletBalance(dbCollection: ewalletUsersCollection, ewalletBalance: reloadedAmount, 
-      fieldName: "ewalletBalance", userId: ewalletDetail.eWalletUserId);
+      fieldName: "ewalletBalance", userId: ewalletDetail?.eWalletUserId);
       //* Create Trx for UE wallet (Payment Trx)
-      _updateStatus = await createEwalletTrx(userId: _firebaseAuth.currentUser.uid, trxType: "Payment", 
-      trxMethod: "UE Wallet", trxRecipient: ewalletDetail.eWalletUserId, trxAmount: reloadedAmount, dateTime: trxDateTime);
+      _updateStatus = await createEwalletTrx(userId: _firebaseAuth.currentUser?.uid, trxType: "Payment", 
+      trxMethod: "UE Wallet", trxRecipient: ewalletDetail?.eWalletUserId, trxAmount: reloadedAmount, dateTime: trxDateTime);
       //* Create Trx for Ewallet (Reload Trx)
-      _updateStatus = await createEwalletTrx(userId: ewalletDetail.eWalletUserId, trxType: "Reload", 
-      trxMethod: "UE Wallet", trxRecipient: ewalletDetail.eWalletType, trxAmount: reloadedAmount, dateTime: trxDateTime);
+      _updateStatus = await createEwalletTrx(userId: ewalletDetail?.eWalletUserId, trxType: "Reload", 
+      trxMethod: "UE Wallet", trxRecipient: ewalletDetail?.eWalletType, trxAmount: reloadedAmount, dateTime: trxDateTime);
       return _updateStatus;
     } catch (e) {
       print(e.toString());
@@ -303,15 +303,15 @@ class DatabaseService {
     }
   }
 
-  Future<bool> performReloadUEwalletTrx({@required double reloadedAmount, @required String paymentMethod}) async {
+  Future<bool> performReloadUEwalletTrx({required double ?reloadedAmount, required String ?paymentMethod}) async {
     bool _updateStatus;
     DateTime trxDateTime = DateTime.now();
     try {
        //* Update UE Account on reloaded balance
       _updateStatus = await updateEwalletBalance(dbCollection: userCollection, ewalletBalance: reloadedAmount, 
-      fieldName: "userUEwalletBalance", userId: _firebaseAuth.currentUser.uid);
+      fieldName: "userUEwalletBalance", userId: _firebaseAuth.currentUser?.uid);
       //* Create Trx for UE wallet (Payment Trx)
-      _updateStatus = await createEwalletTrx(userId: _firebaseAuth.currentUser.uid, trxType: "Reload", 
+      _updateStatus = await createEwalletTrx(userId: _firebaseAuth.currentUser?.uid, trxType: "Reload", 
       trxMethod: "$paymentMethod", trxRecipient: "UE Wallet", trxAmount: reloadedAmount, dateTime: trxDateTime);
       return _updateStatus;
     } catch (e) {
@@ -320,23 +320,23 @@ class DatabaseService {
     }
   }
 
-  Future<TrxCardModel> performPayment({double paymentAmount, EwalletsCardModel ewalletDetail, String merchantName}) async{
+  Future<TrxCardModel> performPayment({double ?paymentAmount, EwalletsCardModel ?ewalletDetail, String ?merchantName}) async{
     bool _updateStatus;
     TrxCardModel trxDetail;
     DateTime trxDateTime = DateTime.now();
     try {
       //* Update E-wallet account on deducted balance
-      _updateStatus = await updateEwalletBalance(dbCollection: ewalletUsersCollection, ewalletBalance: -paymentAmount,
-      fieldName: "ewalletBalance", userId: ewalletDetail.eWalletUserId);
+      _updateStatus = await updateEwalletBalance(dbCollection: ewalletUsersCollection, ewalletBalance: -paymentAmount!,
+      fieldName: "ewalletBalance", userId: ewalletDetail?.eWalletUserId);
 
       //* Create Trx for E-wallet payment (Payment Trx)
-      trxDetail = await createEwalletTrxWithReceipt(userId: ewalletDetail.eWalletUserId, trxType: "Payment", 
-      trxMethod: ewalletDetail.eWalletType, trxRecipient: merchantName, trxAmount: paymentAmount, dateTime: trxDateTime);
+      trxDetail = await createEwalletTrxWithReceipt(userId: ewalletDetail?.eWalletUserId, trxType: "Payment", 
+      trxMethod: ewalletDetail?.eWalletType, trxRecipient: merchantName, trxAmount: paymentAmount, dateTime: trxDateTime);
 
-      return _updateStatus == true && trxDetail != null ? trxDetail : null;
+      return _updateStatus == true && trxDetail != null! ? trxDetail : null!;
     } catch (e) {
       print(e.toString());
-      return null;
+      return null!;
     }
     
   }
@@ -360,7 +360,7 @@ class DatabaseService {
         .snapshots().map( _ewalletTrxLstFromSnapshot );
 
     } catch (e) {
-      yield null ;
+      yield null!;
       print(e.toString());
     }
   }
@@ -403,7 +403,7 @@ class DatabaseService {
         .snapshots().map( _ewalletTrxLstFromSnapshot );
 
     } catch (e) {
-      yield null ;
+      yield null!;
       print(e.toString());
     }
   }

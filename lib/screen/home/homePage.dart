@@ -19,7 +19,7 @@ class HomePage  extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _salesCardCount;
+  int ?_salesCardCount;
 
   Future _refreshPage() async {
     await Future.delayed(Duration(seconds: 1));
@@ -75,6 +75,7 @@ class EwalletServiceSection extends StatelessWidget {
               height: 180,
               // color: Colors.purple[100],
               child: StreamProvider.value(
+                initialData: [],
                 value: DatabaseService().getEwalletUsers(),
                 child: HomeEwalletCard(),
               ),
@@ -119,7 +120,7 @@ class _ExpenditureChartSectionState extends State<ExpenditureChartSection> {
                   inactiveFgColor: Colors.white,
                   labels: ['Weekly', 'Monthly'],
                   // labels: ['Wk', 'Mth'],
-                  onToggle: (index) => setState(() {chartPage = index;}),
+                  onToggle: (index) => setState(() {chartPage = index!;}),
                 ),
               ],
             ),
@@ -144,8 +145,8 @@ class _ExpenditureChartSectionState extends State<ExpenditureChartSection> {
 
 class DisplayWeeklyChart extends StatelessWidget {
 
-  double totalWeeklyTrxAmount;
-  List<WeeklyChart> wkTrx;
+  double ?totalWeeklyTrxAmount;
+  List<WeeklyChart> ?wkTrx;
   TrxCardModel trxCardModel = TrxCardModel();
 
   @override
@@ -155,19 +156,20 @@ class DisplayWeeklyChart extends StatelessWidget {
       builder: (context, snapshot) {
 
         if (snapshot.hasData) {
-          List<TrxCardModel> wkTrxLst = snapshot.data;
+          List<TrxCardModel> wkTrxLst = snapshot.data as List<TrxCardModel>;
           totalWeeklyTrxAmount = trxCardModel.getTotalTrx(wkTrxLst);
           wkTrx =  trxCardModel.getWeeklyTrxAmount(wkTrxLst);
         }
-        return CustomWeeklyLineChart(wkTrx: wkTrx);
+        return Container();
+        // return CustomWeeklyLineChart(wkTrx: wkTrx); //* FIXME: Broken widget
       },
     );
   }
 }
 
 class DisplayMonthlyChart extends StatelessWidget {
-  double totalMonthlyTrxAmount;
-  List<MonthlyChart> mthTrx;
+  double ?totalMonthlyTrxAmount;
+  List<MonthlyChart> ?mthTrx;
   TrxCardModel trxCardModel = TrxCardModel();
 
   @override
@@ -176,18 +178,19 @@ class DisplayMonthlyChart extends StatelessWidget {
       stream: DatabaseService().getMonthlyTrx().asBroadcastStream(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          List<TrxCardModel> mthTrxLst = snapshot.data;
+          List<TrxCardModel> mthTrxLst = snapshot.data as List<TrxCardModel>;
           totalMonthlyTrxAmount = trxCardModel.getTotalTrx(mthTrxLst);
           mthTrx =  trxCardModel.getMonthlyTrxAmount(mthTrxLst);
         }
-        return CustomMonthlyLineChart(mthTrx: mthTrx);
+        return Container();
+        // return CustomMonthlyLineChart(mthTrx: mthTrx); //* FIXME: Broken widget
       },
     );
   }
 }
 
 class SalesPromoCard extends StatelessWidget {
-  final int index;
+  final int ?index;
 
   SalesPromoCard({this.index});
 
@@ -211,7 +214,7 @@ class SalesPromoCard extends StatelessWidget {
                 color: Colors.red[300],
                 child: Image(
                   alignment: Alignment.center,
-                  image: AssetImage(salesCards[index].salesImg),
+                  image: AssetImage(salesCards[index!].salesImg!),
                   fit: BoxFit.fitWidth,
                 ),
               ),
@@ -222,9 +225,9 @@ class SalesPromoCard extends StatelessWidget {
                 padding: EdgeInsets.symmetric(horizontal: GeneralPositioning.salesCard_TextPadding_horz, vertical: GeneralPositioning.salesCard_TextPadding_vert),
                 width: double.infinity,
                 height: double.infinity,
-                color: salesCards[index].salesDescBgColour,
+                color: salesCards[index!].salesDescBgColour,
                 child: Text(
-                  '${salesCards[index].salesTitle}',
+                  '${salesCards[index!].salesTitle}',
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.justify,
@@ -239,7 +242,7 @@ class SalesPromoCard extends StatelessWidget {
             color: Colors.transparent,
             child: InkWell(
               splashColor: Colors.blue.withAlpha(40),
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => IndvSalesPage(salesDetail: salesCards[index],))),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => IndvSalesPage(salesDetail: salesCards[index!],))),
             ),
           ),
         )

@@ -1,14 +1,14 @@
 
 class UserModel {
-  String userId;
-  String userEmail;
-  String userName;
-  double userUeAccBalance;
-  double userBudgetLimit;
-  String userBoostAcc;
-  String userGrabAcc;
-  String userTngAcc;
-  bool isEmailVerified;
+  String ?userId;
+  String ?userEmail;
+  String ?userName;
+  double ?userUeAccBalance;
+  double ?userBudgetLimit;
+  String ?userBoostAcc;
+  String ?userGrabAcc;
+  String ?userTngAcc;
+  bool ?isEmailVerified;
   // static String userBoostAcc = "boost_eliWoo";
   // static String userGrabAcc = "grab_eliWoo";
   // static String userTngAcc = "tng_kumarNazri";
@@ -26,7 +26,7 @@ class UserModel {
   });
 
   List<String> getUserEwalletAcc() {
-    return [userBoostAcc, userGrabAcc, userTngAcc];
+    return [userBoostAcc!, userGrabAcc!, userTngAcc!];
   }
 
   @override

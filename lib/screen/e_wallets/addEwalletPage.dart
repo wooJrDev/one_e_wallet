@@ -19,15 +19,15 @@ class _AddEwalletsPageState extends State<AddEwalletsPage> {
 
   final _formKey = GlobalKey<FormState>();
   List<String> ewalletTypes = EwalletsCardModel().ewalletTypeLst;
-  List<EwalletsCardModel> ewalletLst;
+  List<EwalletsCardModel> ?ewalletLst;
 
   RegExp emailRegex = RegExp(r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+");
 
-  String _currentEwalletType; //Default value
-  String _emailInput;
-  String _passwordInput;
+  String ?_currentEwalletType; //Default value
+  String ?_emailInput;
+  String ?_passwordInput;
   bool _errorFromDb = false;
-  String _errorMsgFromDb;
+  String ?_errorMsgFromDb;
 
   bool loadingState = false;
 
@@ -38,7 +38,7 @@ class _AddEwalletsPageState extends State<AddEwalletsPage> {
       onTap: () => removeFocus(),
       child: Scaffold(
         backgroundColor: ColourTheme.lightBackground,
-        appBar: backButtonAppBar(context: context, title: 'Add E-wallet'),
+        appBar: BackButtonAppBar(context: context, title: 'Add E-wallet'),
         body: SingleChildScrollView(
           child: Container(
             alignment: Alignment.center,
@@ -48,14 +48,14 @@ class _AddEwalletsPageState extends State<AddEwalletsPage> {
               stream: DatabaseService().getEwalletUsers(),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  ewalletLst = snapshot.data;
+                  ewalletLst = snapshot.data as List<EwalletsCardModel>?;
                   
-                  ewalletLst.forEach((ewalletDetail) {
+                  ewalletLst?.forEach((ewalletDetail) {
                     ewalletTypes.removeWhere((ewalletType) => ewalletType == ewalletDetail.eWalletType);
                   });
 
                   return Visibility(
-                    visible: ewalletLst.length == 3 ? false : true,
+                    visible: ewalletLst?.length == 3 ? false : true,
                     replacement: Container(
                       padding: EdgeInsets.all(GeneralPositioning.mainSmallPadding),
                       child: Column(
@@ -104,7 +104,7 @@ class _AddEwalletsPageState extends State<AddEwalletsPage> {
                             ),
                             onPressed: () async {
                               removeFocus();
-                              if (_formKey.currentState.validate()) {
+                              if (_formKey.currentState!.validate()) {
                                 dynamic ewalletUserId = await DatabaseService().authEwalletUserId(email: _emailInput, password: _passwordInput, ewalletType: _currentEwalletType);
                                 if (ewalletUserId == null) {
                                   setState(() {
@@ -117,11 +117,11 @@ class _AddEwalletsPageState extends State<AddEwalletsPage> {
                                   if (accountNotTaken) {
                                     setState(() {
                                       ewalletTypes.removeWhere((item) => item == _currentEwalletType);
-                                      _formKey.currentState.reset();
+                                      _formKey.currentState!.reset();
                                       loadingState = true;
                                     });
 
-                                    dynamic updateResult = await DatabaseService().manageEwalletAcc(ewalletType: DatabaseService().getDbEwalletAccType(_currentEwalletType), ewalletUserId: ewalletUserId);
+                                    dynamic updateResult = await DatabaseService().manageEwalletAcc(ewalletType: DatabaseService().getDbEwalletAccType(_currentEwalletType!), ewalletUserId: ewalletUserId);
                                     if (!updateResult) {
                                       _errorFromDb = true;
                                       _errorMsgFromDb = 'An Error Has Occur, Please Try Again';
@@ -131,14 +131,14 @@ class _AddEwalletsPageState extends State<AddEwalletsPage> {
                                         setState(() {
                                           _errorFromDb = false;
                                           ewalletTypes.removeWhere((item) => item == _currentEwalletType);
-                                          _formKey.currentState.reset();
+                                          _formKey.currentState!.reset();
                                           loadingState = false;
                                         });
                                       }
                                       popUpSuccess(
                                         context: context, 
                                         title: '\nSuccessfully Added $_currentEwalletType \nE-wallet Account',
-                                        dismissAction: () => Navigator.pop(context),
+                                        dismissAction: (type) => Navigator.pop(context),
                                       );
                                     }
                                   } else {
@@ -191,14 +191,14 @@ class _AddEwalletsPageState extends State<AddEwalletsPage> {
     );
   }
 
-  Widget addEwalletTextFormField({String hintText, Function validation, Function onChanged, bool obscureText}) {
+  Widget addEwalletTextFormField({String ?hintText, Function ?validation, Function ?onChanged, bool ?obscureText}) {
     return Container(
       margin: EdgeInsets.only(bottom: GeneralPositioning.mainSmallPadding),
       child: TextFormField(
       style: TextStyle(
         fontSize: TextFormValues.textFormFont,
       ),
-      obscureText: obscureText,
+      obscureText: obscureText!,
       decoration: InputDecoration(
         hintText: '$hintText',
         hintStyle: TextFontStyle.customFontStyle(20, color: Colors.grey),
@@ -234,8 +234,8 @@ class _AddEwalletsPageState extends State<AddEwalletsPage> {
           )
         ),
       ),
-      onChanged: onChanged,
-      validator: validation,
+      onChanged: onChanged as void Function(String)?,
+      validator: validation as String? Function(String?)?,
       ),
     );
   }
@@ -257,7 +257,7 @@ class _AddEwalletsPageState extends State<AddEwalletsPage> {
     } else if (!emailRegex.hasMatch(value)) {
       return 'Invalid email format';
     }
-    return null;
+    return null!;
   }
 
   //Password Validation
@@ -267,13 +267,13 @@ class _AddEwalletsPageState extends State<AddEwalletsPage> {
     } else if (value.length<6) {
       return 'Password must be more than 6 characters';
     }
-    return null;
+    return null!;
   }
 
   //E-wallet dropdown list Validation
   String validateEwalletType(value) {
     if (_currentEwalletType == null) 
       return "Please select an E-wallet from the provided list";
-    return null;
+    return null!;
   }
 }

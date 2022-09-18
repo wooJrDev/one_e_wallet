@@ -1,11 +1,11 @@
 
 class EwalletsCardModel {
-  String eWalletUserId;
-  String eWalletUserName;
-  String eWalletType;
-  double eWalletBalance;
-  String eWalletEmail;
-  String eWalletPassword;
+  String ?eWalletUserId;
+  String ?eWalletUserName;
+  String ?eWalletType;
+  double ?eWalletBalance;
+  String ?eWalletEmail;
+  String ?eWalletPassword;
 
   EwalletsCardModel({this.eWalletUserId, this.eWalletUserName, 
   this.eWalletType, this.eWalletBalance, this.eWalletEmail, this.eWalletPassword});

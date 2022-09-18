@@ -8,7 +8,7 @@ import 'package:one_e_sample/shared_objects/shared_appBar.dart';
 
 class AllTrxPage extends StatefulWidget {
 
-  String ewalletType = "";
+  String ?ewalletType = "";
 
   AllTrxPage({this.ewalletType});
 
@@ -23,7 +23,7 @@ class _AllTrxPageState extends State<AllTrxPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColourTheme.lightBackground,
-      appBar: backButtonAppBar(context: context, title: widget.ewalletType == "" ? 'All Transactions' : 'All ${widget.ewalletType} Transactions'),
+      appBar: BackButtonAppBar(context: context, title: widget.ewalletType == "" ? 'All Transactions' : 'All ${widget.ewalletType} Transactions'),
       body: Container(
               height: 1000,
               width: double.infinity,
@@ -49,10 +49,10 @@ class _AllTrxPageState extends State<AllTrxPage> {
                       ),
                     ); 
                   } else {
-                    trxList = snapshot.data;
+                    trxList = snapshot.data!;
                     trxList = widget.ewalletType != "" ? trxList.where((indvTrx) => indvTrx.trxMethod == widget.ewalletType || indvTrx.trxRecipient == widget.ewalletType).toList() : trxList;
 
-                    trxList.sort( (a, b) => TrxCardModel().getDateTimeFormat(dateTime: b.trxDateTime).compareTo( TrxCardModel().getDateTimeFormat(dateTime: a.trxDateTime) ) ); //Sort based on DateTime descending order
+                    trxList.sort( (a, b) => TrxCardModel().getDateTimeFormat(dateTime: b.trxDateTime!).compareTo( TrxCardModel().getDateTimeFormat(dateTime: a.trxDateTime!) ) ); //Sort based on DateTime descending order
 
                     return Visibility(
                       visible: trxList.isEmpty ? false : true,
@@ -112,7 +112,7 @@ class _AllTrxPageState extends State<AllTrxPage> {
                                                   style: TextFontStyle.customFontStyle(TextFontStyle.historyPage_listTile_subtitle, fontWeight: FontWeight.w600, color: ColourTheme.fontBlue)
                                                 ),
                                                 Text( //Desc (Date)
-                                                  '${TrxCardModel().getTrxDate(dateTime: trxList[index].trxDateTime)}', 
+                                                  '${TrxCardModel().getTrxDate(dateTime: trxList[index].trxDateTime!)}', 
                                                   style: TextFontStyle.customFontStyle(TextFontStyle.historyPage_listTile_subtitle, fontWeight: FontWeight.w600, color: ColourTheme.fontBlue)
                                                 ),
                                               ],
@@ -121,7 +121,7 @@ class _AllTrxPageState extends State<AllTrxPage> {
                                         ],
                                       ),
                                       Text(
-                                        '${TrxCardModel().getTrxCardStyle(trxList[index], dataType: "priceLabel")}RM${trxList[index].trxAmount.toStringAsFixed(2)}', 
+                                        '${TrxCardModel().getTrxCardStyle(trxList[index], dataType: "priceLabel")}RM${trxList[index].trxAmount?.toStringAsFixed(2)}', 
                                         style: TextFontStyle.customFontStyle(TextFontStyle.historyPage_listTile_trailing, fontWeight: FontWeight.w900, color: TrxCardModel().getTrxCardStyle(trxList[index], dataType: "Colour"))
                                       ),
                                     ],

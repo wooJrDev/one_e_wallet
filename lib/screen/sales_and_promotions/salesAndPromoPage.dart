@@ -14,7 +14,7 @@ class SalesAndPromoPageState extends State<SalesAndPromoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColourTheme.lightBackground,
-      appBar: backButtonAppBar(context: context, title: 'Sales and Promotions'),
+      appBar: BackButtonAppBar(context: context, title: 'Sales and Promotions'),
       body: Container(
         // padding: EdgeInsets.fromLTRB(35, 35, 35, 0),
         child: ListView.builder(
@@ -49,7 +49,7 @@ class SalesAndPromoPageState extends State<SalesAndPromoPage> {
                         color: Colors.red[300],
                         child: Image(
                           alignment: Alignment.center,
-                          image: AssetImage(salesCards[index].salesImg),
+                          image: AssetImage(salesCards[index!].salesImg!),
                           fit: BoxFit.fitWidth,
                         ),
                       ),

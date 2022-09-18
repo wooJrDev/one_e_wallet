@@ -5,7 +5,7 @@ import 'package:one_e_sample/shared_objects/shared_appBar.dart';
 
 class IndvSalesPage extends StatelessWidget {
 
-  final SalesCardModel salesDetail;
+  final SalesCardModel ?salesDetail;
 
   IndvSalesPage({this.salesDetail});
 
@@ -13,7 +13,7 @@ class IndvSalesPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColourTheme.lightBackground,
-      appBar: backButtonAppBar(context: context, title: '${salesDetail.ewalletType} Promotion'),
+      appBar: BackButtonAppBar(context: context, title: '${salesDetail?.ewalletType} Promotion'),
       body: SingleChildScrollView(
         child: Container(
           width: double.infinity,
@@ -22,7 +22,7 @@ class IndvSalesPage extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '${salesDetail.salesTitle}',
+                '${salesDetail?.salesTitle}',
                 style: TextFontStyle.customFontStyle(TextFontStyle.indvSalesPage_title, color: ColourTheme.fontBlue),
               ),
               SizedBox(height: 20),
@@ -35,7 +35,7 @@ class IndvSalesPage extends StatelessWidget {
                   borderRadius: BorderRadius.circular(ShapeBorderRadius.homeCardRadius)
                 ),
                 child: Image(
-                  image: AssetImage( salesDetail.salesImg),
+                  image: AssetImage( salesDetail!.salesImg!),
                   fit: BoxFit.cover,
                   alignment: new Alignment(-1.0, 1.0), //? QUES: Do we need to specify the alignment for each photo?
                 ),
@@ -49,7 +49,7 @@ class IndvSalesPage extends StatelessWidget {
               ListView.builder(
                 shrinkWrap: true,
                 physics: NeverScrollableScrollPhysics(),
-                itemCount: salesDetail.salesDesc.length,
+                itemCount: salesDetail?.salesDesc?.length,
                 itemBuilder: (context, index) {
                   return Container(
                     margin: EdgeInsets.only(top: 15),
@@ -63,7 +63,7 @@ class IndvSalesPage extends StatelessWidget {
                         Expanded(
                             child: Container(
                             child: Text(
-                              salesDetail.salesDesc[index],
+                              salesDetail!.salesDesc![index],
                               style: TextFontStyle.customFontStyle(TextFontStyle.indvSalesPage_tncDesc, color: ColourTheme.fontBlue, fontWeight: FontWeight.w600),
                               textAlign: TextAlign.justify,
                             ),

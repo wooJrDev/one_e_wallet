@@ -57,7 +57,7 @@ class ColourTheme {
   static const graphLabelColour = Color(0xFF68737D);
 
   static Color getEwalletTypeMainColour(EwalletsCardModel ewallet) {
-    Color ewalletCardColour;
+    Color ?ewalletCardColour;
     if (ewallet.eWalletType == "Grab") {
       ewalletCardColour = ewallet_Grab;
     } else if (ewallet.eWalletType == "Boost") {
@@ -65,11 +65,11 @@ class ColourTheme {
     } else if (ewallet.eWalletType == "Tng") {
       ewalletCardColour = ewallet_TnG;
     }
-    return ewalletCardColour;
+    return ewalletCardColour!;
   }
 
   static Color getEwalletTypeAccentColour(EwalletsCardModel ewallet) {
-    Color ewalletCardColour;
+    Color ?ewalletCardColour;
     if (ewallet.eWalletType == "Grab") {
       ewalletCardColour = ewallet_Grab_Accent;
     } else if (ewallet.eWalletType == "Boost") {
@@ -77,7 +77,7 @@ class ColourTheme {
     } else if (ewallet.eWalletType == "Tng") {
       ewalletCardColour = ewallet_TnG_Accent;
     }
-    return ewalletCardColour;
+    return ewalletCardColour!;
   }
 
 }
@@ -219,7 +219,7 @@ class TextFontStyle {
 
   static const double textButton = 22;
   
-  static customFontStyle(double fontSize, {FontWeight fontWeight, Color color}) {
+  static customFontStyle(double fontSize, {FontWeight ?fontWeight, Color ?color}) {
     return TextStyle(
       fontSize: fontSize,
       fontWeight: fontWeight ?? FontWeight.bold,

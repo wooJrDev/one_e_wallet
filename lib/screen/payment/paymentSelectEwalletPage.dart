@@ -25,11 +25,11 @@ class PaymentSelectEwalletPage extends StatefulWidget {
 
 class _PaymentSelectEwalletPageState extends State<PaymentSelectEwalletPage> {
 
-  List<String> ewalletTypes = EwalletsCardModel().ewalletTypeLst;
+  List<String> ?ewalletTypes = EwalletsCardModel().ewalletTypeLst;
   List<String> merchantLst = ['Tealive', 'GSC Cinema', 'Snowflake', 'Madam Kwan', "Steven's corner", 'KFC', 'Popular Bookstore'];
 
-  List<EwalletsCardModel> ewalletLst;
-  EwalletsCardModel selectedEwallet;
+  List<EwalletsCardModel> ?ewalletLst;
+  EwalletsCardModel ?selectedEwallet;
 
   final _ewalletFormKey = GlobalKey<FormState>();
 
@@ -38,17 +38,17 @@ class _PaymentSelectEwalletPageState extends State<PaymentSelectEwalletPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColourTheme.lightBackground,
-        appBar: backButtonAppBar(context: context, title: 'E-wallet Selection'),
+        appBar: BackButtonAppBar(context: context, title: 'E-wallet Selection'),
         body: StreamBuilder<List<EwalletsCardModel>>(
           stream: DatabaseService().getEwalletUsers(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
 
-              ewalletLst = snapshot.data;                
-              ewalletTypes = ewalletLst.map((item) => item.eWalletType).toList();
+              ewalletLst = snapshot.data!;                
+              ewalletTypes = ewalletLst?.map((item) => item.eWalletType).cast<String>().toList();
 
               return Visibility(
-                visible: ewalletLst.isEmpty ? false : true,
+                visible: ewalletLst!.isEmpty ? false : true,
                 replacement: Container(
                   padding: EdgeInsets.all(GeneralPositioning.mainSmallPadding),
                   child: Column(
@@ -78,10 +78,10 @@ class _PaymentSelectEwalletPageState extends State<PaymentSelectEwalletPage> {
                       Form(
                         key: _ewalletFormKey,
                         child: DropDownFormField(
-                          itemLst: ewalletTypes, 
+                          itemLst: ewalletTypes!, 
                           validate: validateEwalletType, 
                           hintText: 'Select E-wallet',
-                          onChanged: (value) => setState( () { selectedEwallet = ewalletLst.firstWhere((item) => item.eWalletType == value); } ),
+                          onChanged: (value) => setState( () { selectedEwallet = ewalletLst?.firstWhere((item) => item.eWalletType == value); } ),
                         )
                       ),
                       SizedBox(height: 40),
@@ -95,7 +95,7 @@ class _PaymentSelectEwalletPageState extends State<PaymentSelectEwalletPage> {
                               text: 'Scan QR Code',
                               customWidth: 210,
                               onPressed: () {
-                                if (_ewalletFormKey.currentState.validate()) { scanQrCode(); }
+                                if (_ewalletFormKey.currentState!.validate()) { scanQrCode(); }
                               },
                             ),
 
@@ -105,9 +105,9 @@ class _PaymentSelectEwalletPageState extends State<PaymentSelectEwalletPage> {
                               text: 'Display QR Code',
                               customWidth: 210,
                               onPressed: () async {
-                                if (_ewalletFormKey.currentState.validate()) {  
-                                  Uint8List qrcodeResult = await scanner.generateBarCode('EwalletAcount:${selectedEwallet.eWalletType},Balance:${selectedEwallet.eWalletBalance}');
-                                  showDialog( context: context, builder: (context) => popUpQrCode( onPressed: () => Navigator.pop(context), qrCodeData: qrcodeResult, ewalletType: selectedEwallet.eWalletType, ));
+                                if (_ewalletFormKey.currentState!.validate()) {  
+                                  Uint8List qrcodeResult = await scanner.generateBarCode('EwalletAcount:${selectedEwallet?.eWalletType},Balance:${selectedEwallet?.eWalletBalance}');
+                                  showDialog( context: context, builder: (context) => popUpQrCode( onPressed: () => Navigator.pop(context), qrCodeData: qrcodeResult, ewalletType: selectedEwallet?.eWalletType, ));
                                 }
                               },
                             ),
@@ -134,19 +134,19 @@ class _PaymentSelectEwalletPageState extends State<PaymentSelectEwalletPage> {
   String validateEwalletType(value) {
     if (selectedEwallet == null) 
       return "Please select an e-wallet from the provided list";
-    return null;
+    return null!;
   }
 
   scanQrCode() async {
     try {
       if (await Permission.camera.request().isGranted) { //Prompts for camera permission and check if access if granted
-        String scanResult = await scanner.scan(); //Display the qrcode scanner interface
-        String merchantName = scanResult != null ?scanResult.split("=").last : null;
+        String ?scanResult = await scanner.scan(); //Display the qrcode scanner interface
+        String ?merchantName = scanResult != null ?scanResult.split("=").last : null;
         // print('Scan Result: $scanResult');
         // print('MerchantName: $merchantName');
 
         if ( scanResult != null && merchantLst.contains( merchantName ) ) {
-          displayPaymentAmountPage(context, ewalletDetail: selectedEwallet, merchantName: merchantName);
+          displayPaymentAmountPage(context, ewalletDetail: selectedEwallet!, merchantName: merchantName!);
         } else {
           popUpWarning(context: context, title: 'Invalid Merchant QR Code');
         }
@@ -159,7 +159,7 @@ class _PaymentSelectEwalletPageState extends State<PaymentSelectEwalletPage> {
       }
   }
 
-  displayPaymentAmountPage(BuildContext context, {EwalletsCardModel ewalletDetail, String merchantName}) {
+  displayPaymentAmountPage(BuildContext context, {EwalletsCardModel ?ewalletDetail, String ?merchantName}) {
     Navigator.push( 
       context, 
       PageTransition( 

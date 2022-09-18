@@ -7,7 +7,7 @@ class TrxPopUpDialog extends StatelessWidget {
   final TrxCardModel trxCard;
   final VoidCallback onPressed;
 
-  TrxPopUpDialog({@required this.trxCard, @required this.onPressed});
+  TrxPopUpDialog({required this.trxCard, required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -37,8 +37,8 @@ class TrxPopUpDialog extends StatelessWidget {
             TrxListTile(trxTitle: "Transaction Type", trxLabel: "${trxCard.trxType}",),
             TrxListTile(trxTitle: "Transaction Method", trxLabel: "${trxCard.trxMethod}",),
             TrxListTile(trxTitle:  trxCard.trxType == "Reload" ? "Reloading To" : "Paying To", trxLabel: "${trxCard.trxRecipient}",),
-            TrxListTile(trxTitle: "Transaction Amount", trxLabel: "RM${trxCard.trxAmount.toStringAsFixed(2)}", trxAmountFontSize: TextFontStyle.trxPopUpDialog_subtitle_trxmount,),
-            TrxListTile(trxTitle: "Date and Time", trxLabel: "${TrxCardModel().getTrxDate(dateTime: trxCard.trxDateTime)} ${TrxCardModel().getTrxTime(dateTime: trxCard.trxDateTime)}",),
+            TrxListTile(trxTitle: "Transaction Amount", trxLabel: "RM${trxCard.trxAmount?.toStringAsFixed(2)}", trxAmountFontSize: TextFontStyle.trxPopUpDialog_subtitle_trxmount,),
+            TrxListTile(trxTitle: "Date and Time", trxLabel: "${TrxCardModel().getTrxDate(dateTime: trxCard.trxDateTime!)} ${TrxCardModel().getTrxTime(dateTime: trxCard.trxDateTime!)}",),
             TrxListTile(trxTitle: "Transaction ID", trxLabel: "${trxCard.trxId}",),
 
             Container(
@@ -67,7 +67,7 @@ class TrxPopUpDialog extends StatelessWidget {
 class TrxPopUpCard extends StatelessWidget {
   
   final TrxCardModel trxCard;
-  TrxPopUpCard({this.trxCard});
+  TrxPopUpCard({required this.trxCard});
 
   @override
   Widget build(BuildContext context) {
@@ -94,8 +94,8 @@ class TrxPopUpCard extends StatelessWidget {
           TrxListTile(trxTitle: "Transaction Type", trxLabel: "${trxCard.trxType}",),
           TrxListTile(trxTitle: "Transaction Method", trxLabel: "${trxCard.trxMethod}",),
           TrxListTile(trxTitle:  trxCard.trxType == "Reload" ? "Reloading To" : "Paying To", trxLabel: "${trxCard.trxRecipient}",),
-          TrxListTile(trxTitle: "Transaction Amount", trxLabel: "RM${trxCard.trxAmount.toStringAsFixed(2)}", trxAmountFontSize: TextFontStyle.trxPopUpDialog_subtitle_trxmount,),
-          TrxListTile(trxTitle: "Date and Time", trxLabel: "${TrxCardModel().getTrxDate(dateTime: trxCard.trxDateTime)} ${TrxCardModel().getTrxTime(dateTime: trxCard.trxDateTime)}",),
+          TrxListTile(trxTitle: "Transaction Amount", trxLabel: "RM${trxCard.trxAmount?.toStringAsFixed(2)}", trxAmountFontSize: TextFontStyle.trxPopUpDialog_subtitle_trxmount,),
+          TrxListTile(trxTitle: "Date and Time", trxLabel: "${TrxCardModel().getTrxDate(dateTime: trxCard.trxDateTime!)} ${TrxCardModel().getTrxTime(dateTime: trxCard.trxDateTime!)}",),
           TrxListTile(trxTitle: "Transaction ID", trxLabel: "${trxCard.trxId}",),
 
           Container(

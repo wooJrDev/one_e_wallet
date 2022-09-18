@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:one_e_sample/shared_objects/const_values.dart';
 
 class SalesCardModel {
-  String ewalletType;
-  String salesTitle;
-  List<String> salesDesc;
-  String salesImg;
-  Color salesDescBgColour;
-  Color salesDescTextColour;
+  String ?ewalletType;
+  String ?salesTitle;
+  List<String> ?salesDesc;
+  String ?salesImg;
+  Color ?salesDescBgColour;
+  Color ?salesDescTextColour;
   
   SalesCardModel({ 
     this.ewalletType,
@@ -21,12 +21,12 @@ class SalesCardModel {
 
 //TODO: Add list of salesDesc for the terms and condition of each promo
 List<SalesCardModel> salesCards = salesCardData.map((items) => SalesCardModel( 
-    ewalletType: items['ewalletType'],
-    salesTitle: items['salesTitle'],
-    salesImg: items['salesImg'],
-    salesDescBgColour: items['salesDescBgColour'],
-    salesDescTextColour: items['salesDescTextColour'],
-    salesDesc: items['salesDesc'],
+    ewalletType: items['ewalletType'] as String,
+    salesTitle: items['salesTitle'] as String,
+    salesImg: items['salesImg'] as String,
+    salesDescBgColour: items['salesDescBgColour'] as Color,
+    salesDescTextColour: items['salesDescTextColour'] as Color,
+    salesDesc: items['salesDesc'] as List<String>,
   )).toList() ;
 
 

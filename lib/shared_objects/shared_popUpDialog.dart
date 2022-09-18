@@ -3,23 +3,23 @@ import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:one_e_sample/shared_objects/const_values.dart';
 
-popUpSuccess({@required BuildContext context, @required String title, String desc, VoidCallback dismissAction, Duration autoHideDuration, bool isAutoHide = true}) {
+popUpSuccess({required BuildContext context, required String title, String ?desc, Function(DismissType) ?dismissAction, Duration ?autoHideDuration, bool isAutoHide = true}) {
   return AwesomeDialog(
     context: context,
     animType: AnimType.LEFTSLIDE,
     headerAnimationLoop: false,
     dialogType: DialogType.SUCCES,
     autoHide: isAutoHide ? Duration(seconds: 3) : autoHideDuration,
-    title: title ?? '',
+    title: title,
     desc: desc ?? '',
     btnOkText: 'Dismiss',
     btnOkOnPress: () {},
-    onDissmissCallback: dismissAction ?? () {},
+    onDismissCallback: dismissAction ?? (type) {},
   )
   ..show();
 }
 
-popUpCustomSuccess({@required BuildContext context, @required String title, String desc, Function dismissAction, Widget body, VoidCallback btnOkOnPress, VoidCallback btnCancelOnPress}) {
+popUpCustomSuccess({required BuildContext context, required String title, String ?desc, Function(DismissType) ?dismissAction, Widget ?body, VoidCallback ?btnOkOnPress, VoidCallback ?btnCancelOnPress}) {
   return AwesomeDialog(
     context: context,
     animType: AnimType.LEFTSLIDE,
@@ -28,7 +28,7 @@ popUpCustomSuccess({@required BuildContext context, @required String title, Stri
     // autoHide: Duration(seconds: 3),
     body: body,
     
-    title: title ?? '',
+    title: title,
     desc: desc ?? '',
     btnCancelText: 'Dismiss',
     btnOkText: 'Show Receipt',
@@ -44,49 +44,49 @@ popUpCustomSuccess({@required BuildContext context, @required String title, Stri
     btnCancelOnPress: btnCancelOnPress ?? () {},
     btnOkOnPress: btnOkOnPress,
     
-    onDissmissCallback: dismissAction ?? null,
+    onDismissCallback: dismissAction ?? null,
   )
   ..show();
 }
 
-popUpFailed({@required BuildContext context, @required String title, String desc, Function dismissAction}) {
+popUpFailed({required BuildContext context, required String title, String ?desc, Function(DismissType) ?dismissAction}) {
   return AwesomeDialog(
     context: context,
     animType: AnimType.LEFTSLIDE,
     headerAnimationLoop: false,
     dialogType: DialogType.ERROR,
-    title: title ?? '',
+    title: title,
     desc: desc ?? '',
     btnOkText: 'Dismiss',
     btnOkOnPress: () {},
-    onDissmissCallback: dismissAction ?? () {},
+    onDismissCallback: dismissAction ?? (type) {},
   )
   ..show();
 }
 
-popUpWarning({@required BuildContext context, @required String title, String desc, Function dismissAction, Duration autoHideDuaration}) {
+popUpWarning({required BuildContext context, required String title, String ?desc, Function(DismissType) ?dismissAction, Duration ?autoHideDuaration}) {
   return AwesomeDialog(
     context: context,
     animType: AnimType.LEFTSLIDE,
     headerAnimationLoop: false,
     dialogType: DialogType.WARNING,
-    title: title ?? '',
+    title: title,
     desc: desc ?? '',
     autoHide: autoHideDuaration ?? Duration( milliseconds: 4000 ),
     btnOkText: 'Dismiss',
     btnOkOnPress: () {},
-    onDissmissCallback: dismissAction ?? () {},
+    onDismissCallback: dismissAction ?? (type) {},
   )
   ..show();
 }
 
 class popUpQrCode extends StatelessWidget {
 
-  final Uint8List qrCodeData;
-  final String ewalletType;
-  final VoidCallback onPressed;
+  final Uint8List ?qrCodeData;
+  final String ?ewalletType;
+  final VoidCallback ?onPressed;
 
-  popUpQrCode({ this.onPressed, @required this.qrCodeData, this.ewalletType});
+  popUpQrCode({ this.onPressed, required this.qrCodeData, this.ewalletType});
 
   @override
   Widget build(BuildContext context) {
@@ -120,7 +120,7 @@ class popUpQrCode extends StatelessWidget {
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(15) 
               ),
-              child: qrCodeData.isEmpty ? displayInvalidQrCode() : Image.memory( qrCodeData ),
+              child: qrCodeData!.isEmpty ? displayInvalidQrCode() : Image.memory( qrCodeData! ),
             ),
 
             Container(

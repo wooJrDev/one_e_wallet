@@ -18,9 +18,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  String oldPasswordInput;
-  String newPasswordInput;
-  String confirmPasswordInput;
+  String ?oldPasswordInput;
+  String ?newPasswordInput;
+  String ?confirmPasswordInput;
   bool loadingState = false;
   TextEditingController oldPasswordController = TextEditingController();
   TextEditingController newPasswordController = TextEditingController();
@@ -35,7 +35,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       onTap: () => removeFocus(),
       child: Scaffold(
         backgroundColor: ColourTheme.lightBackground,
-        appBar: backButtonAppBar(context: context, title: 'User Profile Settings'),
+        appBar: BackButtonAppBar(context: context, title: 'User Profile Settings'),
         body: SingleChildScrollView(
           child: Container(
             width: double.infinity,
@@ -87,13 +87,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         TextButton(
                           onPressed: () async {
                             removeFocus();
-                            if (_formKey.currentState.validate()) {
+                            if (_formKey.currentState!.validate()) {
 
                               setState(() {
                                   loadingState = true;
                               });                              
 
-                              var result = await AuthService().updatePassword(email: userDetails.userEmail, oldPassword: oldPasswordInput , newPassword: newPasswordInput);
+                              var result = await AuthService().updatePassword(email: userDetails.userEmail!, oldPassword: oldPasswordInput! , newPassword: newPasswordInput!);
 
                               if (this.mounted) {
                                 setState(() {
@@ -110,8 +110,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                                 popUpSuccess(
                                   context: context, 
                                   title: 'Successfully updated password',
-                                  dismissAction: () => setState(() {
-                                    _formKey.currentState.reset();
+                                  dismissAction: (type) => setState(() {
+                                    _formKey.currentState!.reset();
                                   }),
                                 );
                               }
@@ -145,7 +145,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     );
   }
 
-  Widget userProfileTextFormField({String hintText, String Function(String) validation, Function onChanged, TextEditingController textController}) {
+  Widget userProfileTextFormField({String ?hintText, String Function(String) ?validation, Function ?onChanged, TextEditingController ?textController}) {
     return Container(
       margin: EdgeInsets.only(bottom: GeneralPositioning.mainSmallPadding),
       child: TextFormField(
@@ -190,8 +190,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
             )
           ),
         ),
-        onChanged: onChanged,
-        validator: validation //validation
+        onChanged: onChanged as void Function(String)?,
+        validator: validation as String? Function(String?)?//validation
       ),
     );
   }
@@ -203,7 +203,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     } else if (value.length<6) {
       return 'Old password must be more than 6 characters';
     }
-    return null;
+    return null!;
   }
 
   String newPasswordValidation(value) {
@@ -212,7 +212,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     } else if (value.length<6) {
       return 'New password must be more than 6 characters';
     } 
-    return null;
+    return null!;
   }
 
   String reconfirmPasswordValidation(value) {
@@ -223,7 +223,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
     } else if (value != newPasswordController.text) {
       return 'Reconfirm new password does not match with new password';
     }
-    return null;
+    return null!;
   }
 
   //Password onChanged Function
@@ -246,7 +246,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
 class UserDetailSubTitle extends StatelessWidget {
 
-  final String text;
+  final String ?text;
   UserDetailSubTitle({this.text});
 
   @override
@@ -263,7 +263,7 @@ class UserDetailSubTitle extends StatelessWidget {
 }
 
 class UserDetailInfoTile extends StatelessWidget {
-  final String text;
+  final String ?text;
   UserDetailInfoTile({this.text});
 
   @override

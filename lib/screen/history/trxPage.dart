@@ -29,7 +29,7 @@ class _TrxPageState extends State<TrxPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColourTheme.lightBackground,
-      appBar: titleAppBar(title: 'History',),
+      appBar: TitleAppBar(title: 'History',),
       body: Container(
         padding: EdgeInsets.symmetric(horizontal: GeneralPositioning.mainPadding),
         height: MediaQuery.of(context).size.height - MediaQuery.of(context).padding.top,  
@@ -87,7 +87,7 @@ class _TrxPageState extends State<TrxPage> {
               ),
             );
           }else {
-            trxList = snapshot.data;
+            trxList = snapshot.data!;
 
             trxDataExist = trxList.isEmpty ? false : true;
             highesttrxList = TrxCardModel().getTrxExpenseLst(trxList);
@@ -103,8 +103,8 @@ class _TrxPageState extends State<TrxPage> {
             }
 
             //Sort based on DateTime descending order
-            trxList.sort( (a, b) => TrxCardModel().getDateTimeFormat(dateTime: b.trxDateTime).compareTo( TrxCardModel().getDateTimeFormat(dateTime: a.trxDateTime) ) ); 
-            highesttrxList.sort( (a, b) => b.trxAmount.compareTo( a.trxAmount ) ); 
+            trxList.sort( (a, b) => TrxCardModel().getDateTimeFormat(dateTime: b.trxDateTime!).compareTo( TrxCardModel().getDateTimeFormat(dateTime: a.trxDateTime!) ) ); 
+            highesttrxList.sort( (a, b) => b.trxAmount!.compareTo( a.trxAmount! ) ); 
 
             return trxDataExist ? Column(
               children: <Widget>[
@@ -190,7 +190,7 @@ class _TrxPageState extends State<TrxPage> {
 
   }
 
-  Widget emptyTrxMessage({String title}) {
+  Widget emptyTrxMessage({String ?title}) {
     return Container(
       width: double.infinity,
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 25),
@@ -206,10 +206,10 @@ class _TrxPageState extends State<TrxPage> {
 
 class TrxCard extends StatefulWidget {
 
-  final int cardIndex;
-  final List<TrxCardModel> trxList;
+  final int ?cardIndex;
+  final List<TrxCardModel> ?trxList;
 
-  const TrxCard({Key key, this.cardIndex, this.trxList}) : super(key: key);
+  const TrxCard({Key ?key, this.cardIndex, this.trxList}) : super(key: key);
 
   @override
   _TrxCardState createState() => _TrxCardState();
@@ -229,7 +229,7 @@ class _TrxCardState extends State<TrxCard> {
         child: InkWell(
           splashColor: ColourTheme.inkWellBlue,
           onTap: () {
-            showDialog(context: context, builder: (context) => TrxPopUpDialog(trxCard: widget.trxList[widget.cardIndex], onPressed: () => Navigator.pop(context),),);
+            showDialog(context: context, builder: (context) => TrxPopUpDialog(trxCard: widget.trxList![widget.cardIndex!], onPressed: () => Navigator.pop(context),),);
           },
           child: Padding(
             padding: EdgeInsets.fromLTRB(15, 10, 10, 10),
@@ -238,7 +238,7 @@ class _TrxCardState extends State<TrxCard> {
               children: <Widget>[
                 Row(
                   children: <Widget>[
-                    FaIcon(TrxCardModel().getTrxCardStyle(widget.trxList[widget.cardIndex], dataType: "Icon"), size: TextFontStyle.listTile_faIconSize, color: ColourTheme.fontBlue,),
+                    FaIcon(TrxCardModel().getTrxCardStyle(widget.trxList![widget.cardIndex!], dataType: "Icon"), size: TextFontStyle.listTile_faIconSize, color: ColourTheme.fontBlue,),
                     SizedBox(width: 15,),
                     Container(
                       width: 150,
@@ -246,17 +246,17 @@ class _TrxCardState extends State<TrxCard> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text( //* Title
-                            '${widget.trxList[widget.cardIndex].trxType}: ${TrxCardModel().getTrxCardStyle(widget.trxList[widget.cardIndex], dataType: "title")}', 
+                            '${widget.trxList![widget.cardIndex!].trxType}: ${TrxCardModel().getTrxCardStyle(widget.trxList![widget.cardIndex!], dataType: "title")}', 
                             overflow: TextOverflow.ellipsis,
                             style: TextFontStyle.customFontStyle(TextFontStyle.historyPage_listTile_title, fontWeight: FontWeight.w900, color: ColourTheme.fontBlue)
                           ),
                           Text( //* Desc (Paying/Reloading to )
-                            '${widget.trxList[widget.cardIndex].trxRecipient ?? widget.trxList[widget.cardIndex].trxMethod}', 
+                            '${widget.trxList![widget.cardIndex!].trxRecipient ?? widget.trxList![widget.cardIndex!].trxMethod}', 
                             overflow: TextOverflow.ellipsis,
                             style: TextFontStyle.customFontStyle(TextFontStyle.historyPage_listTile_subtitle, fontWeight: FontWeight.w600, color: ColourTheme.fontBlue)
                           ),
                           Text( //* Desc (Date)
-                            '${TrxCardModel().getTrxDate(dateTime: widget.trxList[widget.cardIndex].trxDateTime)}', 
+                            '${TrxCardModel().getTrxDate(dateTime: widget.trxList![widget.cardIndex!].trxDateTime!)}', 
                             style: TextFontStyle.customFontStyle(TextFontStyle.historyPage_listTile_subtitle, fontWeight: FontWeight.w600, color: ColourTheme.fontBlue)
                           ),
                         ],
@@ -266,10 +266,10 @@ class _TrxCardState extends State<TrxCard> {
                 ),
                 Expanded(
                   child: Text( //* Price
-                    '${TrxCardModel().getTrxCardStyle(widget.trxList[widget.cardIndex], dataType: "priceLabel")}RM${widget.trxList[widget.cardIndex].trxAmount.toStringAsFixed(2)}', 
+                    '${TrxCardModel().getTrxCardStyle(widget.trxList![widget.cardIndex!], dataType: "priceLabel")}RM${widget.trxList![widget.cardIndex!].trxAmount?.toStringAsFixed(2)}', 
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.right,
-                    style: TextFontStyle.customFontStyle(TextFontStyle.historyPage_listTile_trailing, fontWeight: FontWeight.w900, color: TrxCardModel().getTrxCardStyle(widget.trxList[widget.cardIndex], dataType: "Colour"))
+                    style: TextFontStyle.customFontStyle(TextFontStyle.historyPage_listTile_trailing, fontWeight: FontWeight.w900, color: TrxCardModel().getTrxCardStyle(widget.trxList![widget.cardIndex!], dataType: "Colour"))
                   ),
                 ),
               ],

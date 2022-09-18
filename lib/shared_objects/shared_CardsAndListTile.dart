@@ -3,9 +3,9 @@ import 'package:one_e_sample/shared_objects/const_values.dart';
 
 
 class TrxListTile extends StatelessWidget {
-  final String trxTitle;
-  final String trxLabel;
-  final double trxAmountFontSize;
+  final String ?trxTitle;
+  final String ?trxLabel;
+  final double ?trxAmountFontSize;
 
   TrxListTile({this.trxTitle, this.trxLabel, this.trxAmountFontSize});
 
